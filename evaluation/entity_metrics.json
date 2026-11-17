@@ -1,0 +1,17 @@
+{
+  "Rule-Based Engine": {
+    "state_accuracy": 0.9565,
+    "district_accuracy": 0.7008,
+    "year_accuracy": 0.9627
+  },
+  "Scikit-Learn (TF-IDF + LogReg)": {
+    "state_accuracy": 0.9565,
+    "district_accuracy": 0.7008,
+    "year_accuracy": 0.9627
+  },
+  "Hybrid AI Agent (Rules + ML + Gemini)": {
+    "state_accuracy": 0.9565,
+    "district_accuracy": 0.7008,
+    "year_accuracy": 0.9627
+  }
+}

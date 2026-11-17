@@ -1,0 +1,52 @@
+[
+  {
+    "original_filename": "8000309b-59d7-4b5e-aeb1-befaaab9c0f8_Tamil_Nadu_-_State_of_GW_Extraction.csv",
+    "remote_download_filename": "tg_gw_2025.csv",
+    "relative_path": "data/official/opencity_downloads/2025/8000309b-59d7-4b5e-aeb1-befaaab9c0f8_Tamil_Nadu_-_State_of_GW_Extraction.csv",
+    "sha256": "7d710e88629c6b92e61f88ac84da5bb7beada949d04bc93ea75a0bf6a55fe76c",
+    "size_bytes": 5038,
+    "published_dataset_title": "Tamil Nadu - State of GW Extraction (National Compilation of Dynamic Ground Water Resources of India 2025)",
+    "verified_official_title": "National Compilation on Dynamic Ground Water Resources of India, 2025 (p. 197, Telangana); Dynamic Ground Water Resources of Telangana, 2025 (Annexure II, p. 68)",
+    "state": "Telangana",
+    "mislabeled_as_state": "Tamil Nadu",
+    "assessment_year": 2025,
+    "units": "ham (district rows and Total(Ham)); bcm (Total(Bcm) row; raw header column 3 erroneously labels '(bcm)' on ham data)",
+    "opencity_resource_url": "https://data.opencity.in/dataset/national-compilation-of-dynamic-ground-water-resources-of-india-2025/resource/8000309b-59d7-4b5e-aeb1-befaaab9c0f8",
+    "opencity_download_url": "https://data.opencity.in/dataset/3e28a58b-22d4-4f6a-89ac-9738693eb745/resource/8000309b-59d7-4b5e-aeb1-befaaab9c0f8/download/tg_gw_2025.csv",
+    "official_source_url": "https://cgwb.gov.in/cgwbpnm/public/publication-detail/1741",
+    "official_state_report_url": "https://cgwb.gov.in/cgwbpnm/public/publication-detail/2123",
+    "official_pdf_urls": [
+      "https://cgwb.gov.in/cgwbpnm/public/download/1741",
+      "https://cgwb.gov.in/cgwbpnm/public/download/2123"
+    ],
+    "verification_status": "verified",
+    "verified_against": "CGWB 2025 National Compilation PDF (publication 1741, PDF p. 197) and CGWB Telangana 2025 PDF (publication 2123, Ch. 6 p. 52 & Annexure II p. 68)",
+    "notes": "OpenCity resource title and UUID prefix say 'Tamil Nadu', whereas remote filename 'tg_gw_2025.csv' and all 33 district rows + totals are Telangana. All 35 rows and all 14 numeric columns including Hyderabad (6782.51, 6165.55, 6061.83 ham; 98.32%) match CGWB PDF 1741 p. 197 and PDF 2123 Annexure II p. 68 with 0 mismatches. Raw CSV col 3 header mislabels '(bcm)' and col 14 says '(2030)' vs '(2035)' in PDF 1741 / '(2025)' in PDF 2123.",
+    "cleaned_copy_path": "data/processed/verified_sources/Telangana_2025_GW_Extraction_verified.csv"
+  },
+  {
+    "original_filename": "d8c4c53b-5c73-459c-b137-11c51e8fe8e0_Telangana_-_State_of_GW_Extraction.csv",
+    "remote_download_filename": "tn_gw_2025.csv",
+    "relative_path": "data/official/opencity_downloads/2025/d8c4c53b-5c73-459c-b137-11c51e8fe8e0_Telangana_-_State_of_GW_Extraction.csv",
+    "sha256": "0594a84db2c0ae373fc3e04354461a73ed87dc3408ea95ad13754fdcca6c9ec2",
+    "size_bytes": 5502,
+    "published_dataset_title": "Telangana - State of GW Extraction (National Compilation of Dynamic Ground Water Resources of India 2025)",
+    "verified_official_title": "National Compilation on Dynamic Ground Water Resources of India, 2025 (p. 196, Tamil Nadu)",
+    "state": "Tamil Nadu",
+    "mislabeled_as_state": "Telangana",
+    "assessment_year": 2025,
+    "units": "ham (district rows and Total(Ham)); bcm (Total(Bcm) row; raw header column 3 erroneously labels '(bcm)' on ham data)",
+    "opencity_resource_url": "https://data.opencity.in/dataset/national-compilation-of-dynamic-ground-water-resources-of-india-2025/resource/d8c4c53b-5c73-459c-b137-11c51e8fe8e0",
+    "opencity_download_url": "https://data.opencity.in/dataset/3e28a58b-22d4-4f6a-89ac-9738693eb745/resource/d8c4c53b-5c73-459c-b137-11c51e8fe8e0/download/tn_gw_2025.csv",
+    "official_source_url": "https://cgwb.gov.in/cgwbpnm/public/publication-detail/1741",
+    "official_state_report_url": null,
+    "official_pdf_urls": [
+      "https://cgwb.gov.in/cgwbpnm/public/download/1741"
+    ],
+    "verification_status": "verified",
+    "verified_against": "CGWB 2025 National Compilation PDF (publication 1741, PDF p. 196)",
+    "notes": "OpenCity resource webpage/title and UUID prefix say 'Telangana', whereas remote filename 'tn_gw_2025.csv' and all 38 district rows + totals are Tamil Nadu. All 40 rows including Nagapattinam ('-' annual recharge) match CGWB PDF 1741 p. 196 with 0 mismatches. Live OpenCity webpage returned HTTP 502 Bad Gateway during check on 2026-11-12.",
+    "cleaned_copy_path": "data/processed/verified_sources/Tamil_Nadu_2025_GW_Extraction_verified.csv"
+  }
+]
+

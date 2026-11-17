@@ -1,0 +1,422 @@
+{
+  "created_at": "2026-11-15T06:43:11.936594+00:00",
+  "source_project": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent",
+  "destination_project": "E:\\LLM project\\groundwater-ai-agent",
+  "total_files": 69,
+  "files": [
+    {
+      "destination_path": "data\\integrated\\official\\source_manifest.json",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\source_manifest.json",
+      "size_bytes": 4490,
+      "sha256": "ae5b87548c0f391f8aa94f22d9db0e1caed23d79e8872910c20bb2f90bb570b0"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\verification_report.md",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\verification_report.md",
+      "size_bytes": 11730,
+      "sha256": "ed098944f28b9182d2a27677273824e724d8c9d9454b7b44b32abc548aea9f06"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\assessment_unit_categories.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\assessment_unit_categories.csv",
+      "size_bytes": 436428,
+      "sha256": "a2f01b3bc2f338352100e6dcf7efb4b54610fbad77f4e72b24980405b96cf974"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\categorisation_summary.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\categorisation_summary.csv",
+      "size_bytes": 64562,
+      "sha256": "00e5126758021b58fc5319133173e35e78ca5decdebe528d563167f6b0b493a1"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\district_groundwater_resources.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\district_groundwater_resources.csv",
+      "size_bytes": 640320,
+      "sha256": "e6adbdd415a03912e889f33c8b10d76dfcabf519ffb6b4a70315fb88980bc195"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\state_groundwater_resources.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\state_groundwater_resources.csv",
+      "size_bytes": 60859,
+      "sha256": "3d0b9df0622ca3f3bcac80d01bc07939657ce0d379173a424747627353c83032"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\download_manifest.json",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\download_manifest.json",
+      "size_bytes": 31991,
+      "sha256": "fecfc54024e0f9c5f016ba34ff77963143905a9f0ea29c1411a24c5dc06354c7"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\01f6ebfc-1206-49f7-b642-5eff4d7a6c04_Tamil_Nadu_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\01f6ebfc-1206-49f7-b642-5eff4d7a6c04_Tamil_Nadu_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "size_bytes": 2086,
+      "sha256": "2ffd9d20d55490158b54dd2586a450e9e7ac16042a07da8a8cd4edcf471b1ce9"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\088dc656-d75d-4879-9492-4d85e5a44b43_Goa_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\088dc656-d75d-4879-9492-4d85e5a44b43_Goa_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 969,
+      "sha256": "7e6c3814aae1a74f093aad58bd3638f0432b4f8ce861bc435bdcc5529e7a6267"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\0d134ffc-cafa-404a-bcd0-2c58b7b93344_India_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\0d134ffc-cafa-404a-bcd0-2c58b7b93344_India_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 3798,
+      "sha256": "f419bf65e0785418ebdc58b402b31d7e90d90fac0baa0b0ba4222f943916cb84"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\1fe3bbaf-f8ef-457a-b265-4f359a8e55eb_West_Bengal_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\1fe3bbaf-f8ef-457a-b265-4f359a8e55eb_West_Bengal_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 2997,
+      "sha256": "9bdf61503eab5b16fbbb5c3f790744945d7d28ad1be8739d06441c751e051d49"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\3de60b70-3cfe-4885-bd03-eeffe4f0f6e7_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\3de60b70-3cfe-4885-bd03-eeffe4f0f6e7_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "size_bytes": 2192,
+      "sha256": "ea0ee4b46cb99c6d1e3c969721cdc9420b9119fc9cc65d524986f955d7d8e077"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\4bc87adf-ab87-4dfb-8717-9dc794dba038_Delhi_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\4bc87adf-ab87-4dfb-8717-9dc794dba038_Delhi_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 2035,
+      "sha256": "51579a6fd8b3257dbffb470bb36541929fd7c282ed9adf0ac20e924996931011"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\613d2a29-f787-4c50-98b3-22b3bb6d1cb5_Karnataka_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\613d2a29-f787-4c50-98b3-22b3bb6d1cb5_Karnataka_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "size_bytes": 2061,
+      "sha256": "6769db201474c93aa02128b98792ff705eb0ead49ea618bf2e42d1dcd3c27b07"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\75f70077-70af-4d7a-b93b-244f7e314b17_Delhi_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\75f70077-70af-4d7a-b93b-244f7e314b17_Delhi_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "size_bytes": 819,
+      "sha256": "f1cc7ea72a8155a15624e69bb638eca88162eb79296855986d9d3b765abf99af"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\7b0ed034-7ca1-4d5e-90bc-b6ba6e30b99f_Gujarat_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\7b0ed034-7ca1-4d5e-90bc-b6ba6e30b99f_Gujarat_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 4599,
+      "sha256": "27aceea02df9b7240651ca4881783a822dad2b94205f379355056705e3b1875e"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\8891be8c-3f5b-48ed-93dd-e8b4b6ed2c40_Maharashtra_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\8891be8c-3f5b-48ed-93dd-e8b4b6ed2c40_Maharashtra_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 4844,
+      "sha256": "77ec0ed37ac9c784256665f7c0bf57afca9b0549192f42722d464658f3f8f810"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\8d26b8f9-6e52-4b1d-a9d3-f771a5b13d39_Major_Cities_Groundwater_Availability_Utilization_and_Extraction_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\8d26b8f9-6e52-4b1d-a9d3-f771a5b13d39_Major_Cities_Groundwater_Availability_Utilization_and_Extraction_2020.csv",
+      "size_bytes": 1233,
+      "sha256": "aec6f96d09c6cb1481ac3952c336452555583a23d9bd89dbe051ce4ced06b17e"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\98dd1be2-7cc6-41fb-bf39-a7ffb48ccfbb_Telangana_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\98dd1be2-7cc6-41fb-bf39-a7ffb48ccfbb_Telangana_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 4931,
+      "sha256": "f76be8fc8f1bf9fc1b9fd712724baec132f3a2220b3ead0e4fa3a47834b3b6e9"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\ce647baa-39f4-4702-93bb-cae7929ff568_Tamil_Nadu_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\ce647baa-39f4-4702-93bb-cae7929ff568_Tamil_Nadu_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 5412,
+      "sha256": "2a1a17c1a09b29d4fe4351c3facb263b639c607bfaf79c375cd7132da5749c6d"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\dc7da550-247a-4967-882d-7447045185db_Delhi_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\dc7da550-247a-4967-882d-7447045185db_Delhi_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "size_bytes": 623,
+      "sha256": "48315716ac066bacdb01642cd9865d485b88cd629478e78f9424c6eeab986c87"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\e4f15232-5fbc-46d5-b365-525716afbf54_Karnataka_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\e4f15232-5fbc-46d5-b365-525716afbf54_Karnataka_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2020.csv",
+      "size_bytes": 4421,
+      "sha256": "bbab4518acd382a2bfc9ecd74a5a07948796c18ee9274f36f7f4cf840c0f649d"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\ecf70d16-0bac-4a59-9d9d-ac3cd72b4332_Karnataka_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\ecf70d16-0bac-4a59-9d9d-ac3cd72b4332_Karnataka_Groundwater_Categorisation_of_Units_by_Exploitation_2020.csv",
+      "size_bytes": 1308,
+      "sha256": "c6fe71dcab5d37fac8b7d60caef0f9e7098b935cae6fcf927d2efa0c0cbfa3e6"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2020\\f333ac83-7d0b-4743-a5ca-5de7754d5a4f_Tamil_Nadu_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2020\\f333ac83-7d0b-4743-a5ca-5de7754d5a4f_Tamil_Nadu_Categorisation_of_Taluks_by_Groundwater_Extraction_2020.csv",
+      "size_bytes": 13496,
+      "sha256": "beb45b1a601fff3b7b390d839cec60e264d4cc11c7acb4176bbbed9a4ecd29bf"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\039dcb69-739b-4093-8dc8-1c7e09e90c3c_Bihar_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\039dcb69-739b-4093-8dc8-1c7e09e90c3c_Bihar_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 5535,
+      "sha256": "f0d3b93d2a5df3fad7cefa82bb6c4d5ca14d27a91ef4f4a616745452accf6926"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\06115380-b6c4-4967-99c9-b7f587923865_Karnataka_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\06115380-b6c4-4967-99c9-b7f587923865_Karnataka_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4668,
+      "sha256": "fd56c1ec534243d4975261a14d63779b004de94acb1f5988b4831b39db03b485"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\15060cf0-ddb1-4b07-b24f-ca8c33a76f91_India_Ground_Water_Availability_Utilization_and_Extraction_at_States_Level_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\15060cf0-ddb1-4b07-b24f-ca8c33a76f91_India_Ground_Water_Availability_Utilization_and_Extraction_at_States_Level_-_2022.csv",
+      "size_bytes": 3867,
+      "sha256": "5e7d67f2bfed09b02e8d9257fe2ce441d6112e960620c8949aa7a6e7a164315a"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\327b865f-8307-43ed-8c24-2ed12f858e46_Tamil_Nadu_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\327b865f-8307-43ed-8c24-2ed12f858e46_Tamil_Nadu_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 5401,
+      "sha256": "9ae6e6c3599560e9f5c5bedd892c6a77b68b606f46d65d1eebee5fea75ce4d88"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\444cac53-833a-4f27-8011-e70339cc38a7_Uttar_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\444cac53-833a-4f27-8011-e70339cc38a7_Uttar_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 10292,
+      "sha256": "538d01eefa05188d55cf2505d70fb716b7483c90190d525636a0752ee1d64e95"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\522a7ed0-acbb-4f96-a9de-789d3fba9bbd_Goa_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\522a7ed0-acbb-4f96-a9de-789d3fba9bbd_Goa_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 958,
+      "sha256": "f13550b83b7bf34336aae451ebd6a1369223537ae5275b6fe973544c7f329f42"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\5b78f327-b050-462c-8994-dc342c1720bd_Punjab_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\5b78f327-b050-462c-8994-dc342c1720bd_Punjab_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 3626,
+      "sha256": "b204dc08dfe4de7c89c59e7b283b701f6a84bc4ce2ef8c47606e54f5fdad8bed"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\7f748513-4bb8-4b6b-9445-65f542bf07b0_Maharashtra_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\7f748513-4bb8-4b6b-9445-65f542bf07b0_Maharashtra_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4857,
+      "sha256": "8e3d8f724fd9fb825bc0c4d3988ae8f659de9119a95248c85b56e4a3e252243b"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\91625a64-e7f8-4255-b73a-e6d26bcedd33_Odisha_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\91625a64-e7f8-4255-b73a-e6d26bcedd33_Odisha_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4549,
+      "sha256": "6fe0595da852cfedf828b18d507b09ef77acaab55e09c866581d46ca99ea5727"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\91b4dcc2-cc60-4fd6-bd7a-4f308838468a_Categorization_of_States_of_India_by_Ground_Water_Usage_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\91b4dcc2-cc60-4fd6-bd7a-4f308838468a_Categorization_of_States_of_India_by_Ground_Water_Usage_-_2022.csv",
+      "size_bytes": 1860,
+      "sha256": "899b9152eccfa19e783ccbb8f74e65c29dd75e2cbd26092175aae18e57563700"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\a31ad4b1-f7d5-4d69-af3b-397fdb86c573_Andhra_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\a31ad4b1-f7d5-4d69-af3b-397fdb86c573_Andhra_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4142,
+      "sha256": "00ad49ebe07c6dff33c370823e63d89076320591794ed21198b5935c35bc4a41"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\a37bf4fc-8f28-4a0b-a543-2ac32bff4b64_Assam_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\a37bf4fc-8f28-4a0b-a543-2ac32bff4b64_Assam_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4188,
+      "sha256": "2f051462cf1e6252462101d14a1f09c8bb4ff0334996339cd0b89b108fdf97c0"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\a5839e35-301f-415b-a6ef-55bd066775cb_Madhya_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\a5839e35-301f-415b-a6ef-55bd066775cb_Madhya_Pradesh_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 6966,
+      "sha256": "34b1571223fe762ef8b94cdad4fee89381a836cfe721a58dfff20206aa732f01"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\a89717f6-2f3b-4a6d-b060-f5b4f7940aff_Haryana_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\a89717f6-2f3b-4a6d-b060-f5b4f7940aff_Haryana_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 3420,
+      "sha256": "77b3f072a2728d44a10107ecad86684762dd22a5f1b57a2f28989bc08e78219b"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\ab90bbc4-edc1-4ae2-8fe0-7f8ea54792de_West_Bengal_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\ab90bbc4-edc1-4ae2-8fe0-7f8ea54792de_West_Bengal_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 3461,
+      "sha256": "9c6f686d63ff8722cff555549d41c63b85772a3a0b4efc0b082cd29e20496777"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\b2cd33b4-d7c3-4bc6-a90d-8ad9488478c0_Rajasthan_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\b2cd33b4-d7c3-4bc6-a90d-8ad9488478c0_Rajasthan_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4771,
+      "sha256": "27067b75d1d47ffbc23481051b82ee0af00f4a6d9b75e511808b5346c3208987"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\bf064182-9226-4d60-8095-95c41fabe3eb_Gujarat_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\bf064182-9226-4d60-8095-95c41fabe3eb_Gujarat_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4685,
+      "sha256": "f1a8be89505a638ee3c1682147f896fcab2d3314531f6afad597b411512bed4a"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\e0f5255c-e021-44e1-8a6d-9de05224e33c_Kerala_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\e0f5255c-e021-44e1-8a6d-9de05224e33c_Kerala_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 2481,
+      "sha256": "cfed65ae405503fcd777a2551ad005f4bbd8ee08f82d1447a061468a1250177f"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\fb1eb432-28fc-43ac-a03d-11fecd8a5939_Telangana_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\fb1eb432-28fc-43ac-a03d-11fecd8a5939_Telangana_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 4974,
+      "sha256": "866f4028815de2539d33aec7201e66a6b0dddc91ba014f861d3e82cb28350aa6"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2022\\feb08d82-1bed-4e20-9101-afe253154233_Delhi_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2022\\feb08d82-1bed-4e20-9101-afe253154233_Delhi_Ground_Water_Availability_Utilization_and_Extraction_-_2022.csv",
+      "size_bytes": 2025,
+      "sha256": "f443125ea458963c29fcc5f7ee9fccc6f4ee6ecb6490962b6726fcbb08d775a5"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2023\\82439872-e8a5-45c3-a215-64dd334a4377_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2023.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2023\\82439872-e8a5-45c3-a215-64dd334a4377_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2023.csv",
+      "size_bytes": 1531,
+      "sha256": "4b406264aea66c5e0661d635b382684adbfa80c9074f1bb42eb998ce259bd469"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\2c3acb4f-807d-48a3-bc67-b0ecc516fd57_Delhi_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\2c3acb4f-807d-48a3-bc67-b0ecc516fd57_Delhi_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 2056,
+      "sha256": "864483ea33e81fced71734d545c5199c3874b1515b6dbaadfa68b9670c405627"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\51da6ee8-3bd1-44b9-bef3-03e2d115d1cd_Major_Cities_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\51da6ee8-3bd1-44b9-bef3-03e2d115d1cd_Major_Cities_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 1452,
+      "sha256": "3920f6524872cb183445ab4b421bcc65b72d14a93caa5f34dd78d757ed7d3c36"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\595e6455-2851-4d62-9503-ab1f8b65f5b4_India_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\595e6455-2851-4d62-9503-ab1f8b65f5b4_India_Groundwater_Availability_Utilization_and_Extraction_at_States_Level_2024.csv",
+      "size_bytes": 3643,
+      "sha256": "f744069847f0a4b2273dcc1ce06cdfa9e66901d33900ef5e8735b0e5b5084de4"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\67491446-7887-4818-b444-e5a337cc26a7_Tamil_Nadu_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\67491446-7887-4818-b444-e5a337cc26a7_Tamil_Nadu_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 5468,
+      "sha256": "6586094c0da8b2f63c2488a860fab4966d369b17eaedd28332471e13bb9fbbc9"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\6f5b101d-7f57-4c11-b9ad-3a2e05fe8c22_Major_Cities_Categorisation_of_Units_of_Groundwater_Exploitation_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\6f5b101d-7f57-4c11-b9ad-3a2e05fe8c22_Major_Cities_Categorisation_of_Units_of_Groundwater_Exploitation_2024.csv",
+      "size_bytes": 479,
+      "sha256": "89cfa4a7eb897de393b6dca9f596d771e2c64f3f486703d14f45ef3206fe2346"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\9b560637-3549-49c6-bee5-a1e8302c4a33_Maharashtra_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\9b560637-3549-49c6-bee5-a1e8302c4a33_Maharashtra_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 5133,
+      "sha256": "b1b4ba4dfe5a2ec232ace3f11f76c808e13d1c2e95adb91f0bbee6c2413454d1"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\a588eb06-1c5c-4db4-9356-18a15496afce_Karnataka_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\a588eb06-1c5c-4db4-9356-18a15496afce_Karnataka_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 5066,
+      "sha256": "1b634a602719d1dbbbfe4db88a65ced7479856cbacf319eacab39a9687742ced"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\b69fbc07-5d1c-4f73-9394-7252c65f9300_Telangana_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\b69fbc07-5d1c-4f73-9394-7252c65f9300_Telangana_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 5006,
+      "sha256": "f7dfd2d5c61c415b7941c66968db4ed95f1d98d0965a7c34507e041a5a89da05"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\cc0fd6e6-4171-43ab-94d0-33eb1416be14_Gujarat_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\cc0fd6e6-4171-43ab-94d0-33eb1416be14_Gujarat_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 4696,
+      "sha256": "fb7e6f94388809ab5a95aed651929a5c6db9a409e19b5e7688e686076bb97da0"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\e86550c7-dd00-46c0-b958-ffed5a599924_India_States_and_UTs_Categorisation_of_Units_of_Groundwater_Exploitation_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\e86550c7-dd00-46c0-b958-ffed5a599924_India_States_and_UTs_Categorisation_of_Units_of_Groundwater_Exploitation_2024.csv",
+      "size_bytes": 1853,
+      "sha256": "9ebc190db482127dc5049c4a93b127eaa8920f79e41b8ddad1000188f14f6c66"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\ec0f946f-a48b-43c1-a329-c97c244ef66b_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\ec0f946f-a48b-43c1-a329-c97c244ef66b_Major_Cities_Categorisation_of_Taluks_by_Groundwater_Extraction_2024.csv",
+      "size_bytes": 1528,
+      "sha256": "8f4426f6d5dea2456814bdf9b803f56d95ed98e67cefbcd28ff03f6e7d2496d3"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2024\\f3481ceb-6c94-4c15-86ed-02ce19a0155c_Goa_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2024\\f3481ceb-6c94-4c15-86ed-02ce19a0155c_Goa_Groundwater_Availability_Utilization_and_Extraction_2024.csv",
+      "size_bytes": 955,
+      "sha256": "5d3a0b1b9a971784c80a9083f904c1ef3f0b099b51e7796e784cd9c3fd1c6403"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\1ebd568d-0d9b-495d-81fd-3101d27e0f64_Major_Cities_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\1ebd568d-0d9b-495d-81fd-3101d27e0f64_Major_Cities_-_State_of_GW_Extraction.csv",
+      "size_bytes": 1441,
+      "sha256": "1b65007ee40c8825392823b82a29e22ecc602c1aa9d613bd56441f97f040e9b1"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\62220325-6e6b-45c7-89d9-bd197842b7f2_Goa_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\62220325-6e6b-45c7-89d9-bd197842b7f2_Goa_-_State_of_GW_Extraction.csv",
+      "size_bytes": 965,
+      "sha256": "e1f34b2ecfc86fe810dbe057cf90c9d7ddc9eb1edb73b5ef796202403a766972"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\8000309b-59d7-4b5e-aeb1-befaaab9c0f8_Tamil_Nadu_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\8000309b-59d7-4b5e-aeb1-befaaab9c0f8_Tamil_Nadu_-_State_of_GW_Extraction.csv",
+      "size_bytes": 5038,
+      "sha256": "7d710e88629c6b92e61f88ac84da5bb7beada949d04bc93ea75a0bf6a55fe76c"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\8e39cc66-06a4-417b-8a4f-dbd4a9495ed6_Delhi_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\8e39cc66-06a4-417b-8a4f-dbd4a9495ed6_Delhi_-_State_of_GW_Extraction.csv",
+      "size_bytes": 2037,
+      "sha256": "7986725ef324437778f59a77bc3dc3c93d4a8c91a83130c1a751030e5728060a"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\9f5bad83-69fd-4f61-a501-c5c7fc9d22d5_Karnataka_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\9f5bad83-69fd-4f61-a501-c5c7fc9d22d5_Karnataka_-_State_of_GW_Extraction.csv",
+      "size_bytes": 4706,
+      "sha256": "82990ba28b2a10161004c99e64f089aa1fb135f8de7d318358820d19196dc2a1"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\cf526819-7b0c-497a-b681-522d72db9b65_State_of_GW_Extraction_in_States_and_UTs.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\cf526819-7b0c-497a-b681-522d72db9b65_State_of_GW_Extraction_in_States_and_UTs.csv",
+      "size_bytes": 3637,
+      "sha256": "9c20032a80044527b24decd365e20e321de029f80453d12e4232b7e2ec6e7111"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\d8c4c53b-5c73-459c-b137-11c51e8fe8e0_Telangana_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\d8c4c53b-5c73-459c-b137-11c51e8fe8e0_Telangana_-_State_of_GW_Extraction.csv",
+      "size_bytes": 5502,
+      "sha256": "0594a84db2c0ae373fc3e04354461a73ed87dc3408ea95ad13754fdcca6c9ec2"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\d9ca9478-5302-4974-b7c5-ebbea5f5cd03_Major_Cities_-_Categorisation_of_Taluks_by_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\d9ca9478-5302-4974-b7c5-ebbea5f5cd03_Major_Cities_-_Categorisation_of_Taluks_by_GW_Extraction.csv",
+      "size_bytes": 1426,
+      "sha256": "ceb36ecb3d456ff100964a87cde33ec13fead27e48feed7356716700d23eac60"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\ec046422-448d-4ceb-b422-59d85fa54986_Maharashtra_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\ec046422-448d-4ceb-b422-59d85fa54986_Maharashtra_-_State_of_GW_Extraction.csv",
+      "size_bytes": 5139,
+      "sha256": "426b243a9177ade99fd4f1a0375173ff798ccb5af9f56fcb3078e69a94932a73"
+    },
+    {
+      "destination_path": "data\\integrated\\official\\opencity_downloads\\2025\\f64c4019-ba33-4435-9d07-290ade3c398e_Gujarat_-_State_of_GW_Extraction.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\official\\opencity_downloads\\2025\\f64c4019-ba33-4435-9d07-290ade3c398e_Gujarat_-_State_of_GW_Extraction.csv",
+      "size_bytes": 4714,
+      "sha256": "1ef0693d670c57bce2340e0d7e9356d7aa8453ce4b7c65b020082d72b26414dd"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\verified_sources\\Tamil_Nadu_2025_GW_Extraction_verified.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\verified_sources\\Tamil_Nadu_2025_GW_Extraction_verified.csv",
+      "size_bytes": 25742,
+      "sha256": "7ad96d453d98f3226c9852ae6d84b602b8ac17752c62df698ed4359b2195c186"
+    },
+    {
+      "destination_path": "data\\integrated\\processed\\verified_sources\\Telangana_2025_GW_Extraction_verified.csv",
+      "source_path": "C:\\Users\\Mohit Sharma\\Downloads\\ingres_agent\\ingres_agent\\data\\processed\\verified_sources\\Telangana_2025_GW_Extraction_verified.csv",
+      "size_bytes": 22539,
+      "sha256": "84d172bf97fe0e33930c23a92cf958f7a4ae97958e6307312abf7a8a51535df3"
+    }
+  ]
+}

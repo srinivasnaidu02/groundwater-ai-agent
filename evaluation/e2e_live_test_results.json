@@ -1,0 +1,221 @@
+[
+  {
+    "turn": 1,
+    "question": "What is groundwater extraction in Patna in 2022?",
+    "intent": "mixed_query",
+    "function": "get_groundwater_extraction",
+    "exec_ms": 124.98,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2022",
+      "last_parameter": "extraction",
+      "last_intent": "mixed_query",
+      "recent_years": [
+        "2022"
+      ],
+      "last_result_summary": "**Groundwater extraction** refers to the total volume of groundwater pumped from aquifers for socioeconomic uses. In CGWB assessments, it is accounted under three distinct sectors:\n1. **Irrigation Extraction:** Agriculture and crop irrigation (typically >85% of total in India).\n2. **Domestic Extraction:** Drinking and household supply.\n3. **Industrial Extraction:** Manufacturing, commercial operations, and mining.\n\nThe total annual groundwater extraction in Patna, Bihar was 174,600.00 Ham for assessment period 2022. Breakdown: Irrigation: 142,300.00 Ham, Domestic: 24,100.00 Ham, Industrial: 8,200.00 Ham.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_extraction"
+    },
+    "answer": "**Groundwater extraction** refers to the total volume of groundwater pumped from aquifers for socioeconomic uses. In CGWB assessments, it is accounted under three distinct sectors:\n1. **Irrigation Extraction:** Agriculture and crop irrigation (typically >85% of total in India).\n2. **Domestic Extraction:** Drinking and household supply.\n3. **Industrial Extraction:** Manufacturing, commercial operations, and mining.\n\nThe total annual groundwater extraction in Patna, Bihar was 174,600.00 Ham for assessment period 2022. Breakdown: Irrigation: 142,300.00 Ham, Domestic: 24,100.00 Ham, Industrial: 8,200.00 Ham.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED"
+  },
+  {
+    "turn": 2,
+    "question": "What about 2025?",
+    "intent": "mixed_query",
+    "function": "get_groundwater_extraction",
+    "exec_ms": 18.29,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2025",
+      "last_parameter": "extraction",
+      "last_intent": "mixed_query",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "**Groundwater extraction** refers to the total volume of groundwater pumped from aquifers for socioeconomic uses. In CGWB assessments, it is accounted under three distinct sectors:\n1. **Irrigation Extraction:** Agriculture and crop irrigation (typically >85% of total in India).\n2. **Domestic Extraction:** Drinking and household supply.\n3. **Industrial Extraction:** Manufacturing, commercial operations, and mining.\n\nThe total annual groundwater extraction in Patna, Bihar was 59,747.83 Ham for assessment period 2025. Breakdown: Irrigation: 41,223.39 Ham, Domestic: 17,061.84 Ham, Industrial: 1,462.64 Ham.\n\nSource Provenance:\n- Actual Assessment Year: 2025\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Department of Water Resources, River Development & Ganga Rejuvenation, Ministry of Jal Shakti, Government of India\n- Source Document: National Compilation on Dynamic Ground Water Resources of India, 2025\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_extraction"
+    },
+    "answer": "**Groundwater extraction** refers to the total volume of groundwater pumped from aquifers for socioeconomic uses. In CGWB assessments, it is accounted under three distinct sectors:\n1. **Irrigation Extraction:** Agriculture and crop irrigation (typically >85% of total in India).\n2. **Domestic Extraction:** Drinking and household supply.\n3. **Industrial Extraction:** Manufacturing, commercial operations, and mining.\n\nThe total annual groundwater extraction in Patna, Bihar was 59,747.83 Ham for assessment period 2025. Breakdown: Irrigation: 41,223.39 Ham, Domestic: 17,061.84 Ham, Industrial: 1,462.64 Ham.\n\nSource Provenance:\n- Actual Assessment Year: 2025\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Department of Water Resources, River Development & Ganga Rejuvenation, Ministry of Jal Shakti, Government of India\n- Source Document: National Compilation on Dynamic Ground Water Resources of India, 2025\n- Verification Status: VERIFIED"
+  },
+  {
+    "turn": 3,
+    "question": "Compare both.",
+    "intent": "compare_assessment_years",
+    "function": "compare_assessment_years",
+    "exec_ms": 23.1,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2025",
+      "last_parameter": "extraction",
+      "last_intent": "compare_assessment_years",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "Comparison of extraction in Patna, Bihar between 2022 and 2025:\n- 2022: 174,600.00 Ham\n- 2025: 59,747.83 Ham\nAnalysis shows a decrease of 114,852.17 Ham (-65.78%) (Trend: decreased).\n\nSource Provenance:\n- Year 2022: None (District), Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India, Doc: CGWB National Compilation on Dynamic Ground Water Resources of India 2022, Status: VERIFIED\n- Year 2025: None (District), Agency: Central Ground Water Board (CGWB), Department of Water Resources, River Development & Ganga Rejuvenation, Ministry of Jal Shakti, Government of India, Doc: National Compilation on Dynamic Ground Water Resources of India, 2025, Status: VERIFIED",
+      "last_function": "compare_assessment_years"
+    },
+    "answer": "Comparison of extraction in Patna, Bihar between 2022 and 2025:\n- 2022: 174,600.00 Ham\n- 2025: 59,747.83 Ham\nAnalysis shows a decrease of 114,852.17 Ham (-65.78%) (Trend: decreased).\n\nSource Provenance:\n- Year 2022: None (District), Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India, Doc: CGWB National Compilation on Dynamic Ground Water Resources of India 2022, Status: VERIFIED\n- Year 2025: None (District), Agency: Central Ground Water Board (CGWB), Department of Water Resources, River Development & Ganga Rejuvenation, Ministry of Jal Shakti, Government of India, Doc: National Compilation on Dynamic Ground Water Resources of India, 2025, Status: VERIFIED"
+  },
+  {
+    "turn": 4,
+    "question": "What about 2020?",
+    "intent": "get_groundwater_extraction",
+    "function": "get_groundwater_extraction",
+    "exec_ms": 15.32,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2025",
+      "last_parameter": "extraction",
+      "last_intent": "get_groundwater_extraction",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "Verified data for this location, parameter and assessment year is not currently available in the database. (National CGWB assessment data for 2020 covers select states/UTs, and district-level breakdown for Patna is not verified in this dataset). The latest verified assessment year available for Patna is 2025. Would you like to see that figure?",
+      "last_function": "get_groundwater_extraction"
+    },
+    "answer": "Verified data for this location, parameter and assessment year is not currently available in the database. (National CGWB assessment data for 2020 covers select states/UTs, and district-level breakdown for Patna is not verified in this dataset). The latest verified assessment year available for Patna is 2025. Would you like to see that figure?"
+  },
+  {
+    "turn": 5,
+    "question": "And 2026?",
+    "intent": "get_groundwater_extraction",
+    "function": "get_groundwater_extraction",
+    "exec_ms": 12.01,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2025",
+      "last_parameter": "extraction",
+      "last_intent": "get_groundwater_extraction",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "Verified data for this location, parameter and assessment year is not currently available in the database. An official verified district-wise assessment record for Patna in 2026 is not currently published, as CGWB has not yet released the 2026 dynamic groundwater assessment report. The latest verified assessment year available for Patna is 2025. Would you like to see that figure?",
+      "last_function": "get_groundwater_extraction"
+    },
+    "answer": "Verified data for this location, parameter and assessment year is not currently available in the database. An official verified district-wise assessment record for Patna in 2026 is not currently published, as CGWB has not yet released the 2026 dynamic groundwater assessment report. The latest verified assessment year available for Patna is 2025. Would you like to see that figure?"
+  },
+  {
+    "turn": 6,
+    "question": "What about recharge?",
+    "intent": "get_groundwater_recharge",
+    "function": "get_groundwater_recharge",
+    "exec_ms": 22.95,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2022",
+      "last_parameter": "recharge",
+      "last_intent": "get_groundwater_recharge",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "The total annual groundwater recharge in Patna, Bihar was 311,600.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_recharge"
+    },
+    "answer": "The total annual groundwater recharge in Patna, Bihar was 311,600.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED"
+  },
+  {
+    "turn": 7,
+    "question": "Hi.",
+    "intent": "greeting",
+    "function": null,
+    "exec_ms": 1.6,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2022",
+      "last_parameter": "recharge",
+      "last_intent": "get_groundwater_recharge",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "The total annual groundwater recharge in Patna, Bihar was 311,600.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_recharge"
+    },
+    "answer": "Hi! I'm Groundwater AI. How can I help you today? You can ask me about groundwater resources, recharge, extraction, historical assessments, or general groundwater concepts."
+  },
+  {
+    "turn": 8,
+    "question": "How are you?",
+    "intent": "general_conversation",
+    "function": null,
+    "exec_ms": 1.03,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2022",
+      "last_parameter": "recharge",
+      "last_intent": "get_groundwater_recharge",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "The total annual groundwater recharge in Patna, Bihar was 311,600.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_recharge"
+    },
+    "answer": "I'm doing well, thank you for asking! I'm ready to assist you with India's groundwater resource assessments, hydrogeological data, or general concepts. What would you like to explore today?"
+  },
+  {
+    "turn": 9,
+    "question": "Explain that result.",
+    "intent": "followup_explain",
+    "function": null,
+    "exec_ms": 1.01,
+    "passed": true,
+    "active_context": {
+      "last_state": "Bihar",
+      "last_district": "Patna",
+      "last_year": "2022",
+      "last_parameter": "recharge",
+      "last_intent": "get_groundwater_recharge",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "The total annual groundwater recharge in Patna, Bihar was 311,600.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Patna, Bihar (District)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_recharge"
+    },
+    "answer": "**Explanation of Groundwater Recharge Assessment for Patna, Bihar (2022):**\n\nUnder the Central Ground Water Board (CGWB) **GEC-2015 Methodology**, Annual Groundwater Recharge quantifies the volume of water naturally and artificially replenished into the aquifer reservoirs.\n\n**Key Hydrological Components:**\n1. **Monsoon Rainfall Infiltration:** The predominant recharge source in the Gangetic plain, where porous alluvial formations enable high infiltration during heavy rainfall events.\n2. **Non-Monsoon Recharge:** Rainfall replenishment occurring outside the monsoon season.\n3. **Other Sources:** Subsurface seepage from irrigation canals, return flow from applied surface and groundwater irrigation, and percolation from water conservation structures.\n\n**Resource Significance:** Total annual recharge represents the gross replenishment. Deducting natural discharges gives the **Annual Extractable Groundwater Resource**, which serves as the ceiling for safe withdrawal."
+  },
+  {
+    "turn": 10,
+    "question": "What about Punjab?",
+    "intent": "get_groundwater_recharge",
+    "function": "get_groundwater_recharge",
+    "exec_ms": 20.02,
+    "passed": true,
+    "active_context": {
+      "last_state": "Punjab",
+      "last_district": null,
+      "last_year": "2022",
+      "last_parameter": "recharge",
+      "last_intent": "get_groundwater_recharge",
+      "recent_years": [
+        "2022",
+        "2025"
+      ],
+      "last_result_summary": "The total annual groundwater recharge in Punjab was 1,852,400.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Punjab (State)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED",
+      "last_function": "get_groundwater_recharge"
+    },
+    "answer": "The total annual groundwater recharge in Punjab was 1,852,400.00 Ham for assessment period 2022.\n\nSource Provenance:\n- Actual Assessment Year: 2022\n- Actual Location & Level: Punjab (State)\n- Source Agency: Central Ground Water Board (CGWB), Ministry of Jal Shakti, Government of India\n- Source Document: CGWB National Compilation on Dynamic Ground Water Resources of India 2022\n- Verification Status: VERIFIED"
+  }
+]

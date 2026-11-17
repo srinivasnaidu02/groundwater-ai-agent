@@ -1,0 +1,4 @@
+model_name,mode,total_samples,intent_accuracy,macro_precision,macro_recall,macro_f1,weighted_f1,state_extraction_accuracy,district_extraction_accuracy,year_extraction_accuracy,database_execution_rate,avg_latency_ms,p95_latency_ms
+Rule-Based Engine,rule_based,400,0.755,0.7493,0.7152,0.7089,0.741,0.9565,0.7008,0.9627,0.8006,8.8,16.88
+Scikit-Learn (TF-IDF + LogReg),ml,400,0.8975,0.9282,0.9076,0.9071,0.8964,0.9565,0.7008,0.9627,0.8405,10.22,17.11
+Hybrid AI Agent (Rules + ML + Gemini),hybrid,400,0.755,0.7493,0.7152,0.7089,0.741,0.9565,0.7008,0.9627,0.8006,8.99,17.15

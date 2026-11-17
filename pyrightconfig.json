@@ -1,0 +1,19 @@
+{
+  "extraPaths": [
+    ".",
+    "./backend",
+    "backend"
+  ],
+  "typeCheckingMode": "off",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "reportAssignmentType": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportOptionalSubscript": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportCallIssue": "none",
+  "reportArgumentType": "none"
+}

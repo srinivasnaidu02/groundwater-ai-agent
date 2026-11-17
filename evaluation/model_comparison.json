@@ -1,0 +1,50 @@
+[
+  {
+    "model_name": "Rule-Based Engine",
+    "mode": "rule_based",
+    "total_samples": 400,
+    "intent_accuracy": 0.755,
+    "macro_precision": 0.7493,
+    "macro_recall": 0.7152,
+    "macro_f1": 0.7089,
+    "weighted_f1": 0.741,
+    "state_extraction_accuracy": 0.9565,
+    "district_extraction_accuracy": 0.7008,
+    "year_extraction_accuracy": 0.9627,
+    "database_execution_rate": 0.8006,
+    "avg_latency_ms": 8.8,
+    "p95_latency_ms": 16.88
+  },
+  {
+    "model_name": "Scikit-Learn (TF-IDF + LogReg)",
+    "mode": "ml",
+    "total_samples": 400,
+    "intent_accuracy": 0.8975,
+    "macro_precision": 0.9282,
+    "macro_recall": 0.9076,
+    "macro_f1": 0.9071,
+    "weighted_f1": 0.8964,
+    "state_extraction_accuracy": 0.9565,
+    "district_extraction_accuracy": 0.7008,
+    "year_extraction_accuracy": 0.9627,
+    "database_execution_rate": 0.8405,
+    "avg_latency_ms": 10.22,
+    "p95_latency_ms": 17.11
+  },
+  {
+    "model_name": "Hybrid AI Agent (Rules + ML + Gemini)",
+    "mode": "hybrid",
+    "total_samples": 400,
+    "intent_accuracy": 0.755,
+    "macro_precision": 0.7493,
+    "macro_recall": 0.7152,
+    "macro_f1": 0.7089,
+    "weighted_f1": 0.741,
+    "state_extraction_accuracy": 0.9565,
+    "district_extraction_accuracy": 0.7008,
+    "year_extraction_accuracy": 0.9627,
+    "database_execution_rate": 0.8006,
+    "avg_latency_ms": 8.99,
+    "p95_latency_ms": 17.15
+  }
+]
