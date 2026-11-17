@@ -149,14 +149,14 @@ export default function AIAnalystPage() {
               Agentic (ReAct)
             </button>
             <button
-              onClick={() => setMode('deterministic')}
+              onClick={() => setMode('template')}
               className={`px-3 py-1.5 rounded-md transition-all font-medium ${
-                mode === 'deterministic'
+                mode === 'template'
                   ? 'bg-cyan-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Deterministic (&lt;10ms)
+              Template
             </button>
           </div>
 
@@ -221,19 +221,33 @@ export default function AIAnalystPage() {
                     <span className={`px-2.5 py-1 rounded-full border font-medium ${
                       msg.data.mode_used === 'agentic'
                         ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
-                        : msg.data.mode_used === 'deterministic'
+                        : msg.data.mode_used === 'template'
                         ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
                         : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
                     }`}>
                       {msg.data.mode_used === 'agentic' && 'Autonomous ReAct Flow'}
-                      {msg.data.mode_used === 'deterministic' && 'Deterministic Engine'}
-                      {msg.data.mode_used === 'deterministic_fallback' && 'Deterministic Fallback'}
+                      {msg.data.mode_used === 'template' && 'Template Mode'}
+                      {msg.data.mode_used === 'template_fallback' && 'Template Fallback'}
                     </span>
 
-                    {msg.data.verification?.passed && (
+                    {msg.data.verification?.passed && !msg.data.verification?.regenerated && (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-medium">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                         All figures verified against CGWB
+                      </span>
+                    )}
+
+                    {msg.data.verification?.regenerated && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-medium">
+                        <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
+                        Regenerated once
+                      </span>
+                    )}
+
+                    {msg.data.mode_used === 'template_fallback' && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/30 font-medium">
+                        <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                        Template fallback
                       </span>
                     )}
 

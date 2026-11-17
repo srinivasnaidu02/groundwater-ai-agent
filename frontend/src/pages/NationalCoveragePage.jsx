@@ -21,7 +21,7 @@ import {
   Globe,
   SlidersHorizontal
 } from 'lucide-react';
-import { getNationalCoverage, getYearlyCoverage, getDistricts, getDistrictData, getStateComparison, sendChat } from '../services/api';
+import { getNationalCoverage, getYearlyCoverage, getDistricts, getDistrictData, getStateComparison, queryAgent } from '../services/api';
 
 export default function NationalCoveragePage() {
   const [coverage, setCoverage] = useState(null);
@@ -76,9 +76,10 @@ export default function NationalCoveragePage() {
     if (!selectedState || aiLoading) return;
     setAiLoading(true);
     setAiSummary('');
-    sendChat(`Show groundwater overview for ${selectedState}`, null, 'hybrid')
+    queryAgent(`Show groundwater overview for ${selectedState}`, 'auto')
       .then((res) => {
-        setAiSummary(res.data.answer || 'No summary generated.');
+        const text = res.data.answer?.summary || (typeof res.data.answer === 'string' ? res.data.answer : 'No summary generated.');
+        setAiSummary(text);
       })
       .catch(() => {
         setAiSummary(`Failed to generate summary for ${selectedState}.`);

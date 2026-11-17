@@ -2,34 +2,50 @@
 import time
 import json
 import os
+import logging
 from typing import Optional, List, Dict, Any
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from .config import settings
 from .database.connection import get_db, init_db, get_sync_db
 from .database import repository as repo
-from .agent.session_manager import SessionManager
 from .database.models import (
     State, District, AssessmentYear, GroundwaterResource,
-    SourceDataset, QueryLog, EvaluationResult, ConversationSession, ConversationMessage
+    SourceDataset, QueryLog, EvaluationResult
 )
 from .database.functions import get_registry_metadata, execute_function
-from .nlp.query_parser import parse_question
-from .agent.planner import QueryPlanner
-from .schemas.schemas import (
-    QueryRequest, QueryResponse, HealthResponse, MetadataResponse,
-    StructuredQueryRequest, EvaluationSummary, ChatRequest, ChatResponse
+from .schemas.schemas import HealthResponse, MetadataResponse, EvaluationSummary
+
+from backend.app.agentic.config import get_agentic_settings
+from backend.app.agentic.schemas import (
+    AgentQueryRequest,
+    AgentQueryResponse,
+    AgentStatusResponse,
 )
+from backend.app.agentic.orchestrator import AgenticOrchestrator
+from backend.app.agentic.router import decide_route
+
+logger = logging.getLogger(__name__)
+
+# Global agentic orchestrator instance
+_agent_orchestrator = AgenticOrchestrator()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize DB on startup
     init_db()
+    cfg = get_agentic_settings()
+    logger.info(
+        f"[STARTUP] Agentic AI initialized - Provider: {cfg.LLM_PROVIDER}, "
+        f"Model: {cfg.LLM_MODEL}, Key Configured: {cfg.has_api_key()}, "
+        f"Agentic Enabled: {cfg.AGENTIC_ENABLED}"
+    )
     yield
 
 
@@ -126,176 +142,9 @@ def list_assessment_years(db: Session = Depends(get_db)):
     return {"assessment_years": years}
 
 
-# ──────────────────────────── Query ──────────────────────────────────────────
-
-@app.post("/api/query", response_model=QueryResponse, tags=["Query"])
-def natural_language_query(request: QueryRequest, db: Session = Depends(get_db)):
-    parsed = parse_question(request.question)
-    planner = QueryPlanner(db)
-    result = planner.plan_and_execute(parsed)
-
-    try:
-        log = QueryLog(
-            question=request.question,
-            intent=result.get("intent"),
-            entities=json.dumps(result.get("entities", {})),
-            function_called=result.get("selected_function"),
-            parameters=json.dumps(result.get("parameters", {})),
-            status=result.get("status"),
-            response_text=result.get("answer", "")[:2000],
-            execution_time_ms=result.get("execution_time_ms"),
-        )
-        db.add(log)
-        db.commit()
-    except Exception:
-        db.rollback()
-
-    return QueryResponse(**result)
-
-
-# ──────────────────────────── Chat & Sessions ────────────────────────────────
-
-@app.post("/api/chat", response_model=ChatResponse, tags=["Chat"])
-def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
-    t0 = time.time()
-    session_mgr = SessionManager(db)
-    session = session_mgr.get_or_create_session(request.session_id)
-
-    # 1. Check conversational / domain questions first
-    conv_res = session_mgr.resolve_conversational_query(request.question, session)
-    if conv_res:
-        exec_ms = round((time.time() - t0) * 1000, 2)
-        session_mgr.record_turn(
-            session=session,
-            question=request.question,
-            answer=conv_res["answer"],
-            intent=conv_res["intent"],
-            execution_time_ms=exec_ms,
-        )
-        return ChatResponse(
-            status="success",
-            question=request.question,
-            session_id=session.session_id,
-            answer=conv_res["answer"],
-            intent=conv_res["intent"],
-            active_context=session_mgr.get_context(session),
-            model_used="Groundwater Knowledge Base",
-            execution_time_ms=exec_ms,
-            source="CGWB IN-GRES Domain Knowledge",
-        )
-
-    # 2. Parse question with selected mode
-    mode = request.mode or "hybrid"
-    parsed = parse_question(request.question, mode=mode)
-
-    # 3. Apply conversational context (e.g. "What about 2020?", "Compare both")
-    parsed = session_mgr.apply_context_to_query(parsed, session)
-
-    # 4. Plan and execute
-    planner = QueryPlanner(db)
-    plan_res = planner.plan_and_execute(parsed)
-    exec_ms = round((time.time() - t0) * 1000, 2)
-
-    # 5. Update session context
-    context_updates = {}
-    if parsed.get("state"):
-        context_updates["last_state"] = parsed.get("state")
-    if parsed.get("district"):
-        context_updates["last_district"] = parsed.get("district")
-    elif parsed.get("state") and not parsed.get("district"):
-        # Explicit state-only query (e.g. "What about Punjab?") - clear district
-        context_updates["last_district"] = None
-
-    if parsed.get("assessment_year") and plan_res.get("status") == "success":
-        context_updates["last_year"] = parsed.get("assessment_year")
-
-    if parsed.get("parameter"):
-        context_updates["last_parameter"] = parsed.get("parameter")
-    if parsed.get("intent") and parsed.get("intent") not in ["ambiguous", "greeting", "general_conversation"]:
-        context_updates["last_intent"] = parsed.get("intent")
-
-    if plan_res.get("answer"):
-        context_updates["last_result_summary"] = plan_res.get("answer")
-    if plan_res.get("selected_function"):
-        context_updates["last_function"] = plan_res.get("selected_function")
-
-    session_mgr.update_context(session, context_updates)
-
-    # 6. Record turn
-    session_mgr.record_turn(
-        session=session,
-        question=request.question,
-        answer=plan_res.get("answer", ""),
-        intent=plan_res.get("intent"),
-        entities=plan_res.get("entities"),
-        function_name=plan_res.get("selected_function"),
-        parameters=plan_res.get("parameters"),
-        result_data=plan_res.get("result"),
-        trace=plan_res.get("execution_trace"),
-        execution_time_ms=exec_ms,
-    )
-
-    return ChatResponse(
-        status=plan_res.get("status", "success"),
-        question=request.question,
-        session_id=session.session_id,
-        answer=plan_res.get("answer", ""),
-        intent=plan_res.get("intent"),
-        entities=plan_res.get("entities"),
-        selected_function=plan_res.get("selected_function"),
-        parameters=plan_res.get("parameters"),
-        result=plan_res.get("result"),
-        active_context=session_mgr.get_context(session),
-        model_used=parsed.get("model_used"),
-        execution_trace=plan_res.get("execution_trace"),
-        execution_time_ms=exec_ms,
-        source=plan_res.get("source"),
-    )
-
-
-@app.get("/api/chat/history/{session_id}", tags=["Chat"])
-def get_chat_history(session_id: str, db: Session = Depends(get_db)):
-    msgs = db.query(ConversationMessage).filter(
-        ConversationMessage.session_id == session_id
-    ).order_by(ConversationMessage.created_at.asc()).all()
-    session = db.query(ConversationSession).filter(
-        ConversationSession.session_id == session_id
-    ).first()
-    ctx = json.loads(session.active_context) if (session and session.active_context) else {}
-    return {
-        "session_id": session_id,
-        "active_context": ctx,
-        "messages": [
-            {
-                "id": m.id,
-                "role": m.role,
-                "content": m.content,
-                "intent": m.intent,
-                "function_executed": m.function_called,
-                "execution_trace": json.loads(m.execution_trace_json) if m.execution_trace_json else None,
-                "created_at": m.created_at.isoformat() if m.created_at else None,
-            }
-            for m in msgs
-        ],
-    }
-
-
-@app.post("/api/query/structured", tags=["Query"])
-def structured_query(request: StructuredQueryRequest, db: Session = Depends(get_db)):
-    func_name = request.intent
-    params = {k: v for k, v in {
-        "state": request.state,
-        "district": request.district,
-        "assessment_year": request.assessment_year,
-    }.items() if v}
-    result = execute_function(func_name, db, **params)
-    return {"status": result.get("status"), "function": func_name, "result": result}
-
-
-# ──────────────────────────── Functions ──────────────────────────────────────
-
-@app.get("/api/functions", tags=["Registry"])
-def get_functions():
+@app.get("/api/functions", tags=["Tools"])
+def list_functions():
+    """Returns metadata for registered database tools."""
     return {"functions": get_registry_metadata()}
 
 
@@ -658,61 +507,49 @@ def get_model_comparison():
     return {"status": "not_found", "message": "Model comparison file not generated yet."}
 
 
-# ============================================================================
-# Agentic & Generative AI Endpoints
-# ============================================================================
-from fastapi.responses import StreamingResponse
-from backend.app.agentic.config import get_agentic_settings
-from backend.app.agentic.schemas import (
-    AgentQueryRequest,
-    AgentQueryResponse,
-    AgentStatusResponse,
-)
-from backend.app.agentic.orchestrator import AgenticOrchestrator
-from backend.app.agentic.router import execute_routed_query
-
-# Global agentic orchestrator instance
-_agent_orchestrator = AgenticOrchestrator()
-
-
 @app.get("/api/agent/status", response_model=AgentStatusResponse, tags=["Agentic AI"])
 def get_agent_status():
     """Return current agent status, active provider, model, and key configuration."""
     cfg = get_agentic_settings()
     return AgentStatusResponse(
-        provider=cfg.llm_provider,
-        model=cfg.llm_model,
-        api_key_configured=cfg.has_api_key(),
-        agentic_enabled=cfg.agentic_enabled,
-        max_steps=cfg.agent_max_steps,
-        timeout_seconds=cfg.agent_timeout_seconds,
+        provider=cfg.LLM_PROVIDER,
+        model=cfg.LLM_MODEL,
+        key_configured=cfg.has_api_key(),
+        agentic_enabled=cfg.AGENTIC_ENABLED,
     )
 
 
 @app.post("/api/agent/query", response_model=AgentQueryResponse, tags=["Agentic AI"])
-def agent_query_endpoint(
+async def agent_query_endpoint(
     request: AgentQueryRequest,
-    db: Session = Depends(get_db),
 ):
-    """Execute natural language query via intelligent router (deterministic or ReAct agentic loop)."""
-    return execute_routed_query(request=request, db=db, orchestrator=_agent_orchestrator)
+    """Execute natural language query via Agentic AI layer."""
+    mode = decide_route(request.query, request.mode)
+    hints = {
+        "year": request.year,
+        "state": request.state,
+        "district": request.district,
+    }
+    return await _agent_orchestrator.run(query=request.query, mode=mode, hints=hints)
 
 
 @app.post("/api/agent/stream", tags=["Agentic AI"])
-def agent_stream_endpoint(
+async def agent_stream_endpoint(
     request: AgentQueryRequest,
-    db: Session = Depends(get_db),
 ):
     """Stream reasoning steps and final grounded answer using Server-Sent Events (SSE)."""
-    def event_generator():
+    async def event_generator():
         try:
-            # Yield initial thinking notice
             yield f"data: {json.dumps({'event': 'start', 'query': request.query})}\n\n"
 
-            # Execute query with router
-            res = execute_routed_query(request=request, db=db, orchestrator=_agent_orchestrator)
+            mode = decide_route(request.query, request.mode)
+            hints = {
+                "year": request.year,
+                "state": request.state,
+                "district": request.district,
+            }
+            res = await _agent_orchestrator.run(query=request.query, mode=mode, hints=hints)
 
-            # Stream steps
             for step in res.steps:
                 step_data = {
                     "event": "step",
@@ -720,7 +557,6 @@ def agent_stream_endpoint(
                 }
                 yield f"data: {json.dumps(step_data)}\n\n"
 
-            # Stream final payload
             final_data = {
                 "event": "final",
                 "response": res.model_dump(),

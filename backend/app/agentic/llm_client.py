@@ -1,68 +1,48 @@
-"""Abstract LLM Client interface and provider implementations (Gemini, OpenAI, Anthropic, Mock).
-Lazy-imports all SDKs so missing packages or keys never prevent application startup.
-"""
-import os
-import time
+"""Multi-provider LLM Client supporting native function calling and offline mocks."""
+from __future__ import annotations
+
+import asyncio
 import json
 import logging
+import os
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
-from .config import agentic_settings
+from backend.app.agentic.config import agentic_settings
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ToolCall:
-    """Standardized tool invocation payload across providers."""
+    """Standardized tool invocation payload."""
     id: str
     name: str
-    args: Dict[str, Any] = field(default_factory=dict)
+    arguments: Dict[str, Any] = field(default_factory=dict)
 
     @property
-    def arguments(self) -> Dict[str, Any]:
-        """Alias for args for OpenAI schema compatibility."""
-        return self.args
-
-
-ToolCallRequest = ToolCall
-
-
-class LLMMessage(dict):
-    """Convenience dict subclass for LLM chat messages."""
-    def __init__(self, role: str, content: str, name: Optional[str] = None, tool_call_id: Optional[str] = None, **kwargs):
-        super().__init__(role=role, content=content, **kwargs)
-        if name:
-            self["name"] = name
-        if tool_call_id:
-            self["tool_call_id"] = tool_call_id
-
+    def args(self) -> Dict[str, Any]:
+        return self.arguments
 
 
 @dataclass
 class LLMResponse:
     """Standardized response from any LLM provider."""
     content: Optional[str] = None
-    tool_calls: List[ToolCall] = field(default_factory=list)
-    model: str = "unknown"
-    usage: Dict[str, int] = field(default_factory=dict)
-    raw_response: Any = None
+    tool_calls: Optional[List[ToolCall]] = None
 
 
 class LLMClient(ABC):
     """Abstract base class for all LLM providers supporting function-calling."""
 
     @abstractmethod
-    def generate(
+    async def chat(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
-        response_json_schema: Optional[Dict[str, Any]] = None,
     ) -> LLMResponse:
-        """Generate a response, optionally executing native function calling."""
+        """Execute chat completion with optional native function calling."""
         pass
 
 
@@ -76,79 +56,75 @@ class MockLLMClient(LLMClient):
     def set_responses(self, responses: List[LLMResponse]):
         self.predefined_responses = list(responses)
 
-    def generate(
+    async def chat(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
-        response_json_schema: Optional[Dict[str, Any]] = None,
     ) -> LLMResponse:
-        self.call_history.append({
-            "messages": messages,
-            "tools": tools,
-            "temperature": temperature,
-            "schema": response_json_schema,
-        })
+        self.call_history.append({"messages": messages, "tools": tools})
+
         if self.predefined_responses:
             return self.predefined_responses.pop(0)
 
-        # Inspect the last user message for automated intelligent mock responses
+        # Default intelligent script based on message content
         user_msg = ""
         for m in reversed(messages):
             if m.get("role") in ["user", "human"]:
                 user_msg = str(m.get("content", ""))
                 break
 
-        # If tools provided and question asks for Punjab multi-step:
+        # Check if query asks about Punjab over-exploitation
         if tools and "punjab" in user_msg.lower() and ("over-exploited" in user_msg.lower() or "why" in user_msg.lower()):
-            # Simulate multi-step tool calls
             return LLMResponse(
-                content="I will check Punjab's stage of extraction, over-exploited units, and compare 2020 to 2026.",
+                content="Analyzing Punjab groundwater extraction stage, overexploited units, and temporal trend.",
                 tool_calls=[
-                    ToolCall(id="call_1", name="get_stage_of_extraction", args={"state": "Punjab", "assessment_year": "2025"}),
-                    ToolCall(id="call_2", name="get_overexploited_units", args={"state": "Punjab", "assessment_year": "2025"}),
-                    ToolCall(id="call_3", name="compare_assessment_years", args={"state": "Punjab", "parameter": "extraction", "year1": "2020", "year2": "2026"}),
-                ],
-                model="mock-agent-model",
+                    ToolCall(id="call_1", name="get_stage_of_extraction", arguments={"state": "Punjab", "assessment_year": "2025"}),
+                    ToolCall(id="call_2", name="get_overexploited_units", arguments={"state": "Punjab", "assessment_year": "2025"}),
+                    ToolCall(id="call_3", name="compare_assessment_years", arguments={"state": "Punjab", "parameter": "extraction", "year1": "2020", "year2": "2026"}),
+                ]
             )
 
-        # If asked for synthesis JSON output, ground figures dynamically in the provided evidence ledger
-        evidence_numbers = []
-        if "Verified Evidence Ledger:" in user_msg:
-            from backend.app.agentic.verifier import extract_numbers_from_text
-            ledger_text = user_msg.split("Verified Evidence Ledger:")[1].split("Expected JSON")[0] if "Expected JSON" in user_msg else user_msg
-            evidence_numbers = extract_numbers_from_text(ledger_text)
-
-        # Pick verified numbers from evidence ledger if available
-        primary_val = evidence_numbers[0] if evidence_numbers else 101.75
-        secondary_val = evidence_numbers[1] if len(evidence_numbers) > 1 else primary_val
+        # Synthesis JSON generation
+        primary_val = 101.75
+        secondary_val = 13.24
+        # Parse from evidence if available in user message
+        if "Evidence Ledger:" in user_msg or "evidence" in user_msg.lower():
+            import re
+            nums = re.findall(r"\b\d+(?:\.\d+)?\b", user_msg)
+            float_nums = [float(n) for n in nums if float(n) not in [2020.0, 2022.0, 2025.0, 2026.0]]
+            if float_nums:
+                primary_val = float_nums[0]
+                if len(float_nums) > 1:
+                    secondary_val = float_nums[1]
 
         default_json = json.dumps({
-            "summary": f"Groundwater assessment data shows recorded value of {primary_val:,.2f} for the evaluated location.",
+            "summary": f"In Punjab, groundwater extraction stage reached {primary_val:.2f}% with 5 overexploited districts.",
             "numeric_breakdown": [
                 {
-                    "parameter": "Verified Groundwater Assessment Metric",
-                    "location": "Assessed Unit",
-                    "year": "2025",
+                    "label": "Stage of Extraction",
                     "value": primary_val,
-                    "unit": "Ham",
-                    "verification_status": "VERIFIED"
+                    "unit": "%",
+                    "year": "2025"
+                },
+                {
+                    "label": "Extraction Change",
+                    "value": secondary_val,
+                    "unit": "%",
+                    "year": "2020-2026"
                 }
             ],
-            "trend_analysis": f"Trajectory indicates comparative assessment metric of {secondary_val:,.2f} across evaluated cycles.",
-            "interpretation": "[General Hydrogeological Context - Not from CGWB Database] Groundwater extraction levels reflect localized agricultural pumping and aquifer recharge patterns.",
+            "trend_analysis": f"Extraction showed an upward trajectory of {secondary_val:.2f}% between 2020 and 2026.",
+            "interpretation": "[General Hydrogeological Context - Not from CGWB Data] High extraction is driven by intense agricultural irrigation and tubewell pumping.",
             "policy_recommendations": [
-                "[AI Suggestion - Not CGWB Guidance] Expand precision micro-irrigation systems.",
-                "[AI Suggestion - Not CGWB Guidance] Construct artificial recharge structures in over-exploited sub-basins."
+                "[AI Suggestion - Not CGWB Guidance] Expand micro-irrigation systems across over-exploited blocks.",
+                "[AI Suggestion - Not CGWB Guidance] Promote crop diversification to lower water consumption."
             ],
-            "limitations": "Assessment cycle 2026 represents a benchmark projection in the dataset."
+            "limitations": [
+                "2026 data represents a benchmark projection model."
+            ]
         })
 
-        return LLMResponse(
-            content=default_json,
-            tool_calls=[],
-            model="mock-agent-model",
-        )
+        return LLMResponse(content=default_json, tool_calls=None)
 
 
 class GeminiClient(LLMClient):
@@ -156,286 +132,212 @@ class GeminiClient(LLMClient):
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or agentic_settings.GEMINI_API_KEY
-        self.model_name = model_name or agentic_settings.get_effective_model()
+        self.model_name = model_name or agentic_settings.LLM_MODEL or "gemini-2.5-flash"
         self._genai = None
 
     def _get_sdk(self):
         if self._genai is None:
             try:
                 import google.generativeai as genai
-                if not self.api_key:
-                    raise ValueError("GEMINI_API_KEY is not configured.")
-                genai.configure(api_key=self.api_key)
+                if self.api_key:
+                    genai.configure(api_key=self.api_key)
                 self._genai = genai
             except ImportError:
-                raise ImportError("google-generativeai package is not installed. Install via pip install google-generativeai")
+                raise RuntimeError("google-generativeai is not installed. Run `pip install google-generativeai`.")
         return self._genai
 
-    def generate(
+    async def chat(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
-        response_json_schema: Optional[Dict[str, Any]] = None,
     ) -> LLMResponse:
         genai = self._get_sdk()
 
-        # Format system prompt and chat history
-        system_instruction = None
-        contents = []
-        for m in messages:
-            role = m.get("role")
-            text = str(m.get("content", ""))
-            if role == "system":
-                system_instruction = text
-            elif role in ["user", "human"]:
-                contents.append({"role": "user", "parts": [text]})
-            elif role in ["assistant", "model"]:
-                contents.append({"role": "model", "parts": [text]})
-
-        # Convert tool schemas to Gemini declarations if provided
-        gemini_tools = None
-        if tools:
-            # We can pass JSON schema tool definitions
-            gemini_tools = []
-            for t in tools:
-                gemini_tools.append({
-                    "function_declarations": [{
-                        "name": t["name"],
-                        "description": t["description"],
-                        "parameters": t.get("parameters", {"type": "object", "properties": {}}),
-                    }]
-                })
-
-        model = genai.GenerativeModel(
-            model_name=self.model_name,
-            system_instruction=system_instruction,
-            tools=gemini_tools,
-        )
-
-        # Retry with exponential backoff
-        last_err = None
         for attempt in range(3):
             try:
-                gen_config = {"temperature": temperature}
-                if response_json_schema:
-                    gen_config["response_mime_type"] = "application/json"
+                def _sync_call():
+                    model = genai.GenerativeModel(self.model_name)
+                    # Convert OpenAI tool schema to Gemini format if provided
+                    gemini_tools = None
+                    if tools:
+                        gemini_tools = [
+                            genai.types.FunctionDeclaration(
+                                name=t["function"]["name"],
+                                description=t["function"]["description"],
+                                parameters=t["function"]["parameters"],
+                            )
+                            for t in tools if "function" in t
+                        ]
+                    # Format prompt
+                    prompt = "\n".join([f"{m.get('role', 'user').upper()}: {m.get('content', '')}" for m in messages])
+                    return model.generate_content(prompt, tools=gemini_tools)
 
-                response = model.generate_content(
-                    contents=contents,
-                    generation_config=gen_config,
-                )
+                resp = await asyncio.wait_for(asyncio.to_thread(_sync_call), timeout=15.0)
 
-                tool_calls: List[ToolCall] = []
-                content_text = ""
-
-                # Parse candidates and function calls
-                if response.candidates:
-                    candidate = response.candidates[0]
+                # Parse Gemini response
+                tool_calls = []
+                content = None
+                if resp and resp.candidates:
+                    candidate = resp.candidates[0]
                     for part in candidate.content.parts:
                         if hasattr(part, "function_call") and part.function_call:
-                            fc = part.function_call
-                            call_args = {}
-                            if hasattr(fc, "args"):
-                                for k, v in fc.args.items():
-                                    call_args[k] = v
+                            fn = part.function_call
                             tool_calls.append(ToolCall(
-                                id=f"call_{int(time.time() * 1000)}_{len(tool_calls)}",
-                                name=fc.name,
-                                args=call_args,
+                                id=f"call_{fn.name}",
+                                name=fn.name,
+                                arguments=dict(fn.args),
                             ))
                         elif hasattr(part, "text") and part.text:
-                            content_text += part.text
+                            content = (content or "") + part.text
 
-                return LLMResponse(
-                    content=content_text or None,
-                    tool_calls=tool_calls,
-                    model=self.model_name,
-                    raw_response=response,
-                )
+                return LLMResponse(content=content, tool_calls=tool_calls if tool_calls else None)
             except Exception as e:
-                last_err = e
-                logger.warning(f"Gemini API attempt {attempt + 1} failed: {e}")
-                time.sleep(0.5 * (2 ** attempt))
-
-        raise RuntimeError(f"Gemini API failed after 3 attempts: {last_err}")
+                logger.warning(f"GeminiClient chat attempt {attempt + 1} failed: {e}")
+                if attempt < 2:
+                    await asyncio.sleep(1.0 * (2 ** attempt))
+                else:
+                    raise e
+        return LLMResponse(content=None, tool_calls=None)
 
 
 class OpenAIClient(LLMClient):
-    """OpenAI API client supporting native function/tool calling."""
+    """OpenAI native function calling client."""
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or agentic_settings.OPENAI_API_KEY
-        self.model_name = model_name or agentic_settings.get_effective_model()
+        self.model_name = model_name or "gpt-4o-mini"
         self._client = None
 
     def _get_client(self):
         if self._client is None:
             try:
-                from openai import OpenAI
-                if not self.api_key:
-                    raise ValueError("OPENAI_API_KEY is not configured.")
-                self._client = OpenAI(api_key=self.api_key)
+                from openai import AsyncOpenAI
+                self._client = AsyncOpenAI(api_key=self.api_key)
             except ImportError:
-                raise ImportError("openai package is not installed. Install via pip install openai")
+                raise RuntimeError("openai is not installed. Run `pip install openai`.")
         return self._client
 
-    def generate(
+    async def chat(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
-        response_json_schema: Optional[Dict[str, Any]] = None,
     ) -> LLMResponse:
         client = self._get_client()
+        clean_msgs = [{"role": m["role"], "content": str(m.get("content", ""))} for m in messages]
 
-        openai_tools = None
+        kwargs: Dict[str, Any] = {"model": self.model_name, "messages": clean_msgs}
         if tools:
-            openai_tools = [
-                {
-                    "type": "function",
-                    "function": {
-                        "name": t["name"],
-                        "description": t["description"],
-                        "parameters": t.get("parameters", {"type": "object", "properties": {}}),
-                    }
-                }
-                for t in tools
-            ]
+            kwargs["tools"] = tools
 
-        kwargs: Dict[str, Any] = {
-            "model": self.model_name,
-            "messages": messages,
-            "temperature": temperature,
-        }
-        if openai_tools:
-            kwargs["tools"] = openai_tools
-        if response_json_schema:
-            kwargs["response_format"] = {"type": "json_object"}
-
-        last_err = None
         for attempt in range(3):
             try:
-                res = client.chat.completions.create(**kwargs)
-                choice = res.choices[0].message
-                tool_calls: List[ToolCall] = []
-                if choice.tool_calls:
-                    for tc in choice.tool_calls:
-                        parsed_args = {}
-                        try:
-                            parsed_args = json.loads(tc.function.arguments)
-                        except Exception:
-                            pass
-                        tool_calls.append(ToolCall(
+                resp = await asyncio.wait_for(client.chat.completions.create(**kwargs), timeout=15.0)
+                msg = resp.choices[0].message
+                tool_calls = None
+                if msg.tool_calls:
+                    tool_calls = [
+                        ToolCall(
                             id=tc.id,
                             name=tc.function.name,
-                            args=parsed_args,
-                        ))
-
-                return LLMResponse(
-                    content=choice.content,
-                    tool_calls=tool_calls,
-                    model=self.model_name,
-                    raw_response=res,
-                )
+                            arguments=json.loads(tc.function.arguments or "{}"),
+                        )
+                        for tc in msg.tool_calls
+                    ]
+                return LLMResponse(content=msg.content, tool_calls=tool_calls)
             except Exception as e:
-                last_err = e
-                logger.warning(f"OpenAI API attempt {attempt + 1} failed: {e}")
-                time.sleep(0.5 * (2 ** attempt))
-
-        raise RuntimeError(f"OpenAI API failed after 3 attempts: {last_err}")
+                logger.warning(f"OpenAIClient chat attempt {attempt + 1} failed: {e}")
+                if attempt < 2:
+                    await asyncio.sleep(1.0 * (2 ** attempt))
+                else:
+                    raise e
+        return LLMResponse(content=None, tool_calls=None)
 
 
 class AnthropicClient(LLMClient):
-    """Anthropic Claude API client."""
+    """Anthropic Claude tool use client."""
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or agentic_settings.ANTHROPIC_API_KEY
-        self.model_name = model_name or agentic_settings.get_effective_model()
+        self.model_name = model_name or "claude-3-5-haiku-20241022"
         self._client = None
 
     def _get_client(self):
         if self._client is None:
             try:
-                import anthropic
-                if not self.api_key:
-                    raise ValueError("ANTHROPIC_API_KEY is not configured.")
-                self._client = anthropic.Anthropic(api_key=self.api_key)
+                from anthropic import AsyncAnthropic
+                self._client = AsyncAnthropic(api_key=self.api_key)
             except ImportError:
-                raise ImportError("anthropic package is not installed.")
+                raise RuntimeError("anthropic is not installed. Run `pip install anthropic`.")
         return self._client
 
-    def generate(
+    async def chat(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
-        response_json_schema: Optional[Dict[str, Any]] = None,
     ) -> LLMResponse:
         client = self._get_client()
+
+        # Format system and messages
         system_prompt = ""
         user_msgs = []
         for m in messages:
             if m.get("role") == "system":
                 system_prompt += m.get("content", "") + "\n"
             else:
-                user_msgs.append({"role": m.get("role"), "content": m.get("content")})
+                user_msgs.append({"role": m["role"], "content": m.get("content", "")})
 
-        claude_tools = None
+        anthropic_tools = None
         if tools:
-            claude_tools = [
+            anthropic_tools = [
                 {
-                    "name": t["name"],
-                    "description": t["description"],
-                    "input_schema": t.get("parameters", {"type": "object", "properties": {}}),
+                    "name": t["function"]["name"],
+                    "description": t["function"]["description"],
+                    "input_schema": t["function"]["parameters"],
                 }
-                for t in tools
+                for t in tools if "function" in t
             ]
 
         kwargs: Dict[str, Any] = {
             "model": self.model_name,
-            "max_tokens": 2048,
+            "max_tokens": 1024,
             "messages": user_msgs,
-            "temperature": temperature,
         }
         if system_prompt:
             kwargs["system"] = system_prompt
-        if claude_tools:
-            kwargs["tools"] = claude_tools
+        if anthropic_tools:
+            kwargs["tools"] = anthropic_tools
 
-        res = client.messages.create(**kwargs)
-        tool_calls: List[ToolCall] = []
-        content_text = ""
-        for block in res.content:
-            if block.type == "text":
-                content_text += block.text
-            elif block.type == "tool_use":
-                tool_calls.append(ToolCall(
-                    id=block.id,
-                    name=block.name,
-                    args=block.input,
-                ))
+        for attempt in range(3):
+            try:
+                resp = await asyncio.wait_for(client.messages.create(**kwargs), timeout=15.0)
+                content = None
+                tool_calls = []
+                for block in resp.content:
+                    if block.type == "text":
+                        content = (content or "") + block.text
+                    elif block.type == "tool_use":
+                        tool_calls.append(ToolCall(
+                            id=block.id,
+                            name=block.name,
+                            arguments=block.input,
+                        ))
+                return LLMResponse(content=content, tool_calls=tool_calls if tool_calls else None)
+            except Exception as e:
+                logger.warning(f"AnthropicClient chat attempt {attempt + 1} failed: {e}")
+                if attempt < 2:
+                    await asyncio.sleep(1.0 * (2 ** attempt))
+                else:
+                    raise e
+        return LLMResponse(content=None, tool_calls=None)
 
-        return LLMResponse(
-            content=content_text or None,
-            tool_calls=tool_calls,
-            model=self.model_name,
-            raw_response=res,
-        )
 
-
-def get_llm_client(provider: Optional[str] = None) -> LLMClient:
+def get_llm_client() -> LLMClient:
     """Factory creating the appropriate LLM client based on configuration."""
-    selected = (provider or agentic_settings.LLM_PROVIDER or "gemini").lower()
-
-    if selected == "mock":
-        return MockLLMClient()
-    elif selected == "openai":
-        return OpenAIClient()
-    elif selected == "anthropic":
-        return AnthropicClient()
-    elif selected == "gemini":
+    provider = (agentic_settings.LLM_PROVIDER or "mock").lower()
+    if provider == "gemini":
         return GeminiClient()
-    else:
-        logger.warning(f"Unknown provider '{selected}', falling back to MockLLMClient")
-        return MockLLMClient()
+    elif provider == "openai":
+        return OpenAIClient()
+    elif provider == "anthropic":
+        return AnthropicClient()
+    return MockLLMClient()

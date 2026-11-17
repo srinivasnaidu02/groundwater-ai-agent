@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  MessageSquare,
   BarChart3,
   TrendingUp,
   Globe,
@@ -29,8 +28,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
       open: workspaceOpen,
       setOpen: setWorkspaceOpen,
       items: [
-        { to: '/', label: 'Query Intelligence', icon: MessageSquare },
-        { to: '/analyst', label: 'AI Analyst (ReAct)', icon: Sparkles },
+        { to: '/', label: 'AI Analyst (ReAct)', icon: Sparkles },
         { to: '/analytics', label: 'Analytics Dashboard', icon: BarChart3 },
         { to: '/historical', label: 'Historical Analysis', icon: TrendingUp },
         { to: '/coverage', label: 'National Coverage', icon: Globe },

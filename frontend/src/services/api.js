@@ -12,8 +12,6 @@ const api = axios.create({
   timeout: 30000,
 });
 
-export const queryNL = (question) => api.post('/query', { question });
-export const queryStructured = (data) => api.post('/query/structured', data);
 export const getStates = () => api.get('/states');
 export const getDistricts = (state) => api.get(`/districts/${encodeURIComponent(state)}`);
 export const getAssessmentYears = () => api.get('/assessment-years');
@@ -32,10 +30,7 @@ export const getDistrictData = (state, year = '2022', district = '') =>
 export const getDistrictMultiyear = (state, district) =>
   api.get(`/analytics/district-multiyear/${encodeURIComponent(state)}/${encodeURIComponent(district)}`);
 
-// Multi-Year, Conversational & Historical Analytics Endpoints
-export const sendChat = (question, sessionId = null, mode = 'hybrid') =>
-  api.post('/chat', { question, session_id: sessionId, mode });
-export const getChatHistory = (sessionId) => api.get(`/chat/history/${sessionId}`);
+// Multi-Year & Historical Analytics Endpoints
 export const getNationalCoverage = () => api.get('/coverage');
 export const getYearlyCoverage = () => api.get('/analytics/yearly-coverage');
 export const getHistoricalTrend = (state, district = null, parameter = 'extraction') =>
