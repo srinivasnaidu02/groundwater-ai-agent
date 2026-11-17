@@ -1,5 +1,5 @@
 """Application configuration using pydantic-settings."""
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 import os
 
@@ -21,9 +21,10 @@ class Settings(BaseSettings):
     DATA_DIR: str = "./data/raw"
     PROCESSED_DIR: str = "./data/processed"
 
-    class Config:
-        env_file = ".env"
-        extra = "allow"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="allow",
+    )
 
     @property
     def cors_origins(self) -> list:

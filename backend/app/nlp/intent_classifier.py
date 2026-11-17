@@ -13,6 +13,7 @@ Also provides fine-grained database intent identifiers for deterministic retriev
 """
 import re
 from typing import Dict, Any, Optional
+from .geo_resolver import resolve_geography
 
 
 # 1. Pure Greetings (Short, greeting-only tokens without year or data parameters)
@@ -284,7 +285,6 @@ def classify_intent(question: str) -> Dict[str, Any]:
     # 9. Conversational Follow-up: Location only (e.g. "what about Punjab?", "and Gaya?", "in Haryana?")
     # Must not contain words like "groundwater" or query verbs which indicate full or ambiguous queries
     if "groundwater" not in q and not any(w in q for w in ["show", "give", "tell", "list", "how much", "how many"]):
-        from .geo_resolver import resolve_geography
         lm = FOLLOWUP_LOCATION_PATTERN.match(q)
         if lm:
             cand = lm.group(5).strip()

@@ -44,4 +44,9 @@ export const compareAssessmentYears = (state, year1 = '2020', year2 = '2026', di
   api.get(`/analytics/compare-years?state=${encodeURIComponent(state)}&year1=${year1}&year2=${year2}${district ? `&district=${encodeURIComponent(district)}` : ''}&parameter=${parameter}`);
 export const getModelComparison = () => api.get('/evaluation/model-comparison');
 
+// Agentic & Generative AI Endpoints
+export const queryAgent = (query, mode = 'auto', year = null, state = null, district = null) =>
+  api.post('/agent/query', { query, mode, year, state, district });
+export const getAgentStatus = () => api.get('/agent/status');
+
 export default api;

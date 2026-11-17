@@ -45,6 +45,75 @@ User Query -> React Frontend (Port 5173)
 
 ---
 
+## Agentic & Generative AI Layer (v2.0)
+
+The system features an autonomous **Agentic ReAct Layer** and **Generative Grounded Synthesizer** with strict anti-hallucination guardrails:
+
+```mermaid
+flowchart TD
+    UserQuery["User Natural Language Query"] --> Router{"Execution Router"}
+    
+    %% Fast Path
+    Router -->|"Simple / High-Confidence Intent"| Deterministic["Deterministic Pipeline (<10ms)"]
+    Deterministic --> Repos["SQLAlchemy Repository Functions"]
+    
+    %% Agentic Path
+    Router -->|"Complex / 'Why' / Multi-Year / Compare"| Orchestrator["ReAct Orchestrator Loop"]
+    Orchestrator --> ToolRegistry["Tool Registry (12 Verified Tools)"]
+    ToolRegistry --> GeoResolver["Entity Normalization (geo_resolver)"]
+    GeoResolver --> Repos
+    Repos --> SQLite[("Read-Only SQLite Database")]
+    SQLite --> EvidenceLedger["Verified Evidence Ledger"]
+    EvidenceLedger --> Synthesizer["LLM Synthesizer (Gemini / OpenAI / Anthropic)"]
+    
+    %% Anti-Hallucination Guard
+    Synthesizer --> Verifier{"Numeric Verifier Guard"}
+    Verifier -->|"100% Numbers Verified"| FormattedResp["Verified Structured Response"]
+    Verifier -->|"Unverified Number Detected"| Regenerator["Regenerate (1 Attempt)"]
+    Regenerator --> Verifier
+    Verifier -->|"Verification Failed Twice"| Fallback["Deterministic Template Fallback"]
+    Fallback --> FormattedResp
+    
+    Deterministic --> FormattedResp
+    FormattedResp --> FrontendUI["React 19 AI Analyst Dashboard"]
+```
+
+### Agentic Capabilities & Anti-Hallucination Rules
+1. **Multi-Step ReAct Planning**: Iteratively calls database tools (`get_stage_of_extraction`, `get_overexploited_units`, `compare_assessment_years`, etc.), detects duplicate tool invocations, and handles timeouts gracefully.
+2. **Numeric Verifier (Anti-Hallucination Guard)**: Extracts all numbers from synthesized prose/tables and cross-checks every figure against the evidence ledger or derived metrics (Ham &harr; MCM/BCM conversions, % changes) within a 0.5% tolerance. If any fabricated number appears, it triggers automatic regeneration or deterministic fallback.
+3. **Strict Causal & Policy Separation**:
+   - **Verified Data**: Strictly cited from official CGWB Dynamic Ground Water Resources records.
+   - **Interpretation**: General hydrogeological principles, explicitly labeled as *non-factual context*.
+   - **Policy Recommendations**: Explicitly labeled as *AI-generated suggestions, not official CGWB directives*.
+4. **Prompt Injection Defense**: All user inputs and tool outputs are treated strictly as data, neutralizing system prompt extraction attempts.
+5. **Multi-Provider Support**: Seamlessly works with Google Gemini (`gemini-2.5-flash`), OpenAI (`gpt-4o-mini`), Anthropic Claude, or offline `MockLLMClient`. Automatically falls back to deterministic execution if no API key is set.
+
+---
+
+### Agentic Environment Configuration (.env)
+```env
+# Provider options: gemini | openai | anthropic | mock
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-2.5-flash
+
+# API Key (optional - system defaults to deterministic mode if not set)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Execution Bounds
+AGENT_MAX_STEPS=6
+AGENT_TIMEOUT_SECONDS=30
+LLM_TEMPERATURE=0.2
+AGENTIC_ENABLED=true
+```
+
+### Running with Google Gemini
+1. Obtain an API key from [Google AI Studio](https://aistudio.google.com/).
+2. Add `GEMINI_API_KEY=your_key` to `.env`.
+3. Start the backend: `python -m uvicorn backend.app.main:app --reload`
+4. Access the dedicated **AI Analyst (ReAct)** tab on the frontend at `http://localhost:5173/analyst`.
+
+---
+
 ## Quick Start Guide
 
 ### 1. Prerequisites

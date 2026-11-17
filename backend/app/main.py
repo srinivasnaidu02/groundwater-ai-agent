@@ -656,3 +656,82 @@ def get_model_comparison():
         with open(report_file, "r", encoding="utf-8") as f:
             return {"status": "success", "data": json.load(f)}
     return {"status": "not_found", "message": "Model comparison file not generated yet."}
+
+
+# ============================================================================
+# Agentic & Generative AI Endpoints
+# ============================================================================
+from fastapi.responses import StreamingResponse
+from backend.app.agentic.config import get_agentic_settings
+from backend.app.agentic.schemas import (
+    AgentQueryRequest,
+    AgentQueryResponse,
+    AgentStatusResponse,
+)
+from backend.app.agentic.orchestrator import AgenticOrchestrator
+from backend.app.agentic.router import execute_routed_query
+
+# Global agentic orchestrator instance
+_agent_orchestrator = AgenticOrchestrator()
+
+
+@app.get("/api/agent/status", response_model=AgentStatusResponse, tags=["Agentic AI"])
+def get_agent_status():
+    """Return current agent status, active provider, model, and key configuration."""
+    cfg = get_agentic_settings()
+    return AgentStatusResponse(
+        provider=cfg.llm_provider,
+        model=cfg.llm_model,
+        api_key_configured=cfg.has_api_key(),
+        agentic_enabled=cfg.agentic_enabled,
+        max_steps=cfg.agent_max_steps,
+        timeout_seconds=cfg.agent_timeout_seconds,
+    )
+
+
+@app.post("/api/agent/query", response_model=AgentQueryResponse, tags=["Agentic AI"])
+def agent_query_endpoint(
+    request: AgentQueryRequest,
+    db: Session = Depends(get_db),
+):
+    """Execute natural language query via intelligent router (deterministic or ReAct agentic loop)."""
+    return execute_routed_query(request=request, db=db, orchestrator=_agent_orchestrator)
+
+
+@app.post("/api/agent/stream", tags=["Agentic AI"])
+def agent_stream_endpoint(
+    request: AgentQueryRequest,
+    db: Session = Depends(get_db),
+):
+    """Stream reasoning steps and final grounded answer using Server-Sent Events (SSE)."""
+    def event_generator():
+        try:
+            # Yield initial thinking notice
+            yield f"data: {json.dumps({'event': 'start', 'query': request.query})}\n\n"
+
+            # Execute query with router
+            res = execute_routed_query(request=request, db=db, orchestrator=_agent_orchestrator)
+
+            # Stream steps
+            for step in res.steps:
+                step_data = {
+                    "event": "step",
+                    "step": step.model_dump(),
+                }
+                yield f"data: {json.dumps(step_data)}\n\n"
+
+            # Stream final payload
+            final_data = {
+                "event": "final",
+                "response": res.model_dump(),
+            }
+            yield f"data: {json.dumps(final_data)}\n\n"
+        except Exception as e:
+            err_data = {
+                "event": "error",
+                "message": str(e),
+            }
+            yield f"data: {json.dumps(err_data)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+

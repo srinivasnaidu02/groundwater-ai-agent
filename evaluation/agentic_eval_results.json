@@ -1,0 +1,391 @@
+{
+  "summary": {
+    "total_test_cases": 22,
+    "tool_selection_accuracy_pct": 100.0,
+    "verification_pass_rate_pct": 100.0,
+    "total_hallucinated_numbers": 0,
+    "average_latency_ms": 6.0
+  },
+  "results": [
+    {
+      "id": "eval_001",
+      "query": "Why is Punjab over-exploited and how did it change from 2020 to 2026?",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_overexploited_units",
+        "get_stage_of_extraction",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_overexploited_units",
+        "get_stage_of_extraction",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 27.22,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_002",
+      "query": "Compare groundwater extraction and recharge between Punjab and Haryana in 2025",
+      "category": "inter_location",
+      "tools_expected": [
+        "get_groundwater_recharge",
+        "compare_locations",
+        "get_groundwater_extraction"
+      ],
+      "tools_called": [
+        "get_groundwater_recharge",
+        "compare_locations",
+        "get_groundwater_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 9.4,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_003",
+      "query": "Explain the trajectory of groundwater recharge in Uttar Pradesh from 2020 to 2025",
+      "category": "multi_year_comparison",
+      "tools_expected": [
+        "get_historical_groundwater_data",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_historical_groundwater_data",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 7.28,
+      "summary": "Groundwater assessment data shows recorded value of 2,020.00 for the evaluated location."
+    },
+    {
+      "id": "eval_004",
+      "query": "Why is Jalandhar classified as over-exploited and what is its extraction stage?",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "tools_called": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.81,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_005",
+      "query": "What are the over-exploited districts in Rajasthan and how much is total annual draft?",
+      "category": "overexploitation_analysis",
+      "tools_expected": [
+        "get_overexploited_units",
+        "get_groundwater_extraction"
+      ],
+      "tools_called": [
+        "get_overexploited_units",
+        "get_groundwater_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.56,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_006",
+      "query": "Recommend conservation policies for Ludhiana based on its stage of extraction and recharge deficit",
+      "category": "policy_recommendations",
+      "tools_expected": [
+        "get_groundwater_recharge",
+        "get_stage_of_extraction",
+        "get_groundwater_extraction"
+      ],
+      "tools_called": [
+        "get_groundwater_recharge",
+        "get_stage_of_extraction",
+        "get_groundwater_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.48,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_007",
+      "query": "How did annual extractable groundwater resources in Bihar change between 2022 and 2025?",
+      "category": "multi_year_comparison",
+      "tools_expected": [
+        "get_extractable_groundwater",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_extractable_groundwater",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.81,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_008",
+      "query": "Why does South Delhi have high extraction and what is the domestic vs industrial draft breakdown?",
+      "category": "sectoral_breakdown",
+      "tools_expected": [
+        "get_stage_of_extraction",
+        "get_groundwater_extraction"
+      ],
+      "tools_called": [
+        "get_stage_of_extraction",
+        "get_groundwater_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.25,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_009",
+      "query": "Analyze the national groundwater extraction total and identify key critical states in 2025",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_overexploited_units",
+        "get_country_summary"
+      ],
+      "tools_called": [
+        "get_overexploited_units",
+        "get_country_summary"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 5.31,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_010",
+      "query": "Compare stage of extraction in Amritsar vs Patiala for 2025",
+      "category": "inter_location",
+      "tools_expected": [
+        "compare_locations",
+        "get_stage_of_extraction"
+      ],
+      "tools_called": [
+        "compare_locations",
+        "get_stage_of_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.36,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_011",
+      "query": "Explain why groundwater extraction in Prayagraj changed from 2020 to 2025",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_stage_of_extraction",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_stage_of_extraction",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.78,
+      "summary": "Groundwater assessment data shows recorded value of 2,020.00 for the evaluated location."
+    },
+    {
+      "id": "eval_012",
+      "query": "What is the annual recharge in Gujarat and how does monsoon recharge compare to non-monsoon?",
+      "category": "sectoral_breakdown",
+      "tools_expected": [
+        "get_groundwater_recharge",
+        "get_state_summary"
+      ],
+      "tools_called": [
+        "get_groundwater_recharge",
+        "get_state_summary"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.43,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_013",
+      "query": "Assess the over-exploitation risk in Haryana and compare extraction from 2020 to 2026",
+      "category": "overexploitation_analysis",
+      "tools_expected": [
+        "get_overexploited_units",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_overexploited_units",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 5.13,
+      "summary": "Groundwater assessment data shows recorded value of 2,020.00 for the evaluated location."
+    },
+    {
+      "id": "eval_014",
+      "query": "What is the total extractable groundwater in Karnataka and what policy steps should be taken?",
+      "category": "policy_recommendations",
+      "tools_expected": [
+        "get_extractable_groundwater",
+        "get_state_summary"
+      ],
+      "tools_called": [
+        "get_extractable_groundwater",
+        "get_state_summary"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.14,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_015",
+      "query": "Compare groundwater extraction between Jaipur and Jodhpur in Rajasthan",
+      "category": "inter_location",
+      "tools_expected": [
+        "compare_locations",
+        "get_groundwater_extraction"
+      ],
+      "tools_called": [
+        "compare_locations",
+        "get_groundwater_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.76,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_016",
+      "query": "Why is Bathinda classified as over-exploited and what is the stage percentage in 2025?",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "tools_called": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 5.86,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_017",
+      "query": "Explain how groundwater recharge in Tamil Nadu evolved from 2020 to 2025",
+      "category": "multi_year_comparison",
+      "tools_expected": [
+        "get_historical_groundwater_data",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_historical_groundwater_data",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 6.49,
+      "summary": "Groundwater assessment data shows recorded value of 2,020.00 for the evaluated location."
+    },
+    {
+      "id": "eval_018",
+      "query": "What is the state summary for Maharashtra in assessment cycle 2025?",
+      "category": "overexploitation_analysis",
+      "tools_expected": [
+        "get_state_summary",
+        "get_stage_of_extraction"
+      ],
+      "tools_called": [
+        "get_state_summary",
+        "get_stage_of_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 4.29,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_019",
+      "query": "Analyze whether Bengaluru Urban has an extraction stage exceeding safe threshold",
+      "category": "causal_reasoning",
+      "tools_expected": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "tools_called": [
+        "get_stage_of_extraction",
+        "get_assessment_category"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.06,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_020",
+      "query": "Compare recharge and extraction in Madhya Pradesh between 2020 and 2025",
+      "category": "multi_year_comparison",
+      "tools_expected": [
+        "get_state_summary",
+        "compare_assessment_years"
+      ],
+      "tools_called": [
+        "get_state_summary",
+        "compare_assessment_years"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 3.65,
+      "summary": "Groundwater assessment data shows recorded value of 2,020.00 for the evaluated location."
+    },
+    {
+      "id": "eval_021",
+      "query": "Identify the top over-exploited assessment units in Punjab and suggest mitigation pathways",
+      "category": "policy_recommendations",
+      "tools_expected": [
+        "get_overexploited_units",
+        "get_stage_of_extraction"
+      ],
+      "tools_called": [
+        "get_overexploited_units",
+        "get_stage_of_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 5.06,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    },
+    {
+      "id": "eval_022",
+      "query": "Explain the difference in groundwater sustainability between Bihar and Punjab in 2025",
+      "category": "inter_location",
+      "tools_expected": [
+        "get_state_summary",
+        "get_stage_of_extraction"
+      ],
+      "tools_called": [
+        "get_state_summary",
+        "get_stage_of_extraction"
+      ],
+      "verification_passed": true,
+      "unverified_numbers": [],
+      "latency_ms": 7.91,
+      "summary": "Groundwater assessment data shows recorded value of 2,025.00 for the evaluated location."
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ChevronDown,
   Droplets,
+  Sparkles,
   X
 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
       setOpen: setWorkspaceOpen,
       items: [
         { to: '/', label: 'Query Intelligence', icon: MessageSquare },
+        { to: '/analyst', label: 'AI Analyst (ReAct)', icon: Sparkles },
         { to: '/analytics', label: 'Analytics Dashboard', icon: BarChart3 },
         { to: '/historical', label: 'Historical Analysis', icon: TrendingUp },
         { to: '/coverage', label: 'National Coverage', icon: Globe },

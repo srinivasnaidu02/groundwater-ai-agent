@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 import ChatPage from './pages/ChatPage';
+import AIAnalystPage from './pages/AIAnalystPage';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import HistoricalDashboard from './pages/HistoricalDashboard';
 import NationalCoveragePage from './pages/NationalCoveragePage';
@@ -18,6 +19,7 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<ChatPage />} />
+          <Route path="/analyst" element={<AIAnalystPage />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
           <Route path="/historical" element={<HistoricalDashboard />} />
           <Route path="/coverage" element={<NationalCoveragePage />} />
