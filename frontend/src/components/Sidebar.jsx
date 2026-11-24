@@ -17,7 +17,7 @@ import {
   X
 } from 'lucide-react';
 
-export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
+export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen, drawerMode = false }) {
   const [workspaceOpen, setWorkspaceOpen] = useState(true);
   const [knowledgeOpen, setKnowledgeOpen] = useState(true);
   const [systemOpen, setSystemOpen] = useState(true);
@@ -57,24 +57,26 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Backdrop */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden"
+          className={`fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 ${
+            drawerMode ? 'block' : 'lg:hidden'
+          }`}
         />
       )}
 
       {/* Sidebar */}
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-200 ease-in-out border-r
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${mobileOpen ? 'translate-x-0' : (drawerMode ? '-translate-x-full' : '-translate-x-full lg:translate-x-0')}
           ${collapsed ? 'w-16' : 'w-60'}
           bg-[#07131e] border-slate-800/80 text-slate-300 shadow-xl select-none`}
       >
         {/* Brand Header */}
         <div className="h-14 flex items-center justify-between px-3.5 border-b border-slate-800/80 bg-[#06101a]">
-          <NavLink to="/" className="flex items-center space-x-2.5 overflow-hidden">
+          <NavLink to="/" onClick={() => setMobileOpen(false)} className="flex items-center space-x-2.5 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-cyan-900/40">
               <Droplets className="w-4 h-4 text-cyan-100" />
             </div>
@@ -92,7 +94,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
 
           <button
             onClick={() => setMobileOpen(false)}
-            className="lg:hidden text-slate-400 hover:text-white p-1"
+            className={`${drawerMode ? 'flex' : 'lg:hidden flex'} text-slate-400 hover:text-white p-1`}
           >
             <X className="w-4 h-4" />
           </button>

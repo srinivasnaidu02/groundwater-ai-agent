@@ -29,6 +29,7 @@ from backend.app.agentic.schemas import (
 )
 from backend.app.agentic.orchestrator import AgenticOrchestrator
 from backend.app.agentic.router import decide_route
+from backend.app.agentic.tools import ALIAS_MAP, STATE_ALIASES
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +147,46 @@ def list_assessment_years(db: Session = Depends(get_db)):
 def list_functions():
     """Returns metadata for registered database tools."""
     return {"functions": get_registry_metadata()}
+
+
+# ──────────────────────────── Metadata (Guided Context) ───────────────────────
+
+@app.get("/api/meta/years", tags=["Metadata"])
+def get_meta_years(db: Session = Depends(get_db)):
+    """Returns list of all available assessment years."""
+    years = [y.year for y in db.query(AssessmentYear).order_by(AssessmentYear.year).all()]
+    return {"years": years, "assessment_years": years}
+
+
+@app.get("/api/meta/states", tags=["Metadata"])
+def get_meta_states(db: Session = Depends(get_db)):
+    """Returns list of all available States and Union Territories."""
+    states = [s.name for s in db.query(State).order_by(State.name).all()]
+    return {"states": states}
+
+
+@app.get("/api/meta/districts", tags=["Metadata"])
+def get_meta_districts(state: str, db: Session = Depends(get_db)):
+    """Returns list of districts for a given state with normalization."""
+    if not state or not state.strip():
+        raise HTTPException(status_code=400, detail="State parameter is required.")
+    clean_state = state.strip()
+    norm_state = STATE_ALIASES.get(clean_state.lower(), clean_state)
+    st = db.query(State).filter(func.lower(State.name) == norm_state.lower()).first()
+    if not st:
+        st = db.query(State).filter(func.lower(State.name) == clean_state.lower()).first()
+    if not st:
+        st = db.query(State).filter(State.name.ilike(f"%{clean_state}%")).first()
+    if not st:
+        raise HTTPException(status_code=404, detail=f"State '{state}' not found.")
+    districts = (
+        db.query(District.name)
+        .filter(District.state_id == st.id)
+        .distinct()
+        .order_by(District.name)
+        .all()
+    )
+    return {"state": st.name, "districts": [d[0] for d in districts]}
 
 
 # ──────────────────────────── History ────────────────────────────────────────
@@ -519,11 +560,72 @@ def get_agent_status():
     )
 
 
+def validate_agent_context(request: AgentQueryRequest, db: Session):
+    """Validate optional guided context parameters (year, state, district)."""
+    district_val = request.district.strip() if request.district else None
+    state_val = request.state.strip() if request.state else None
+
+    # Rule 5: If a district is selected, the state is required. Return 422 otherwise.
+    if district_val and district_val != "State-level (no district)":
+        if not state_val:
+            raise HTTPException(
+                status_code=422,
+                detail="District cannot be specified without a state."
+            )
+
+    # Validate year if present
+    if request.year is not None:
+        valid_years = [y.year for y in db.query(AssessmentYear).all()]
+        if str(request.year) not in valid_years:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Assessment year '{request.year}' is invalid. Available years: {', '.join(sorted(valid_years))}"
+            )
+
+    # Validate state if present
+    st = None
+    if state_val:
+        norm_state = STATE_ALIASES.get(state_val.lower(), state_val)
+        st = db.query(State).filter(func.lower(State.name) == norm_state.lower()).first()
+        if not st:
+            st = db.query(State).filter(func.lower(State.name) == state_val.lower()).first()
+        if not st:
+            raise HTTPException(
+                status_code=422,
+                detail=f"State '{request.state}' is unknown."
+            )
+
+    # Validate district if present and state verified
+    if district_val and district_val != "State-level (no district)" and st:
+        norm_dist, mapped_state = ALIAS_MAP.get(district_val.lower(), (district_val, st.name))
+        if mapped_state and mapped_state.lower() != st.name.lower():
+            raise HTTPException(
+                status_code=422,
+                detail=f"District '{request.district}' not found in state '{st.name}' (belongs to '{mapped_state}')."
+            )
+        d = db.query(District).filter(
+            District.state_id == st.id,
+            func.lower(District.name) == norm_dist.lower()
+        ).first()
+        if not d:
+            d = db.query(District).filter(
+                District.state_id == st.id,
+                func.lower(District.name) == district_val.lower()
+            ).first()
+        if not d:
+            raise HTTPException(
+                status_code=422,
+                detail=f"District '{request.district}' not found in state '{st.name}'."
+            )
+
+
 @app.post("/api/agent/query", response_model=AgentQueryResponse, tags=["Agentic AI"])
 async def agent_query_endpoint(
     request: AgentQueryRequest,
+    db: Session = Depends(get_db),
 ):
     """Execute natural language query via Agentic AI layer."""
+    validate_agent_context(request, db)
     mode = decide_route(request.query, request.mode)
     hints = {
         "year": request.year,
@@ -536,8 +638,10 @@ async def agent_query_endpoint(
 @app.post("/api/agent/stream", tags=["Agentic AI"])
 async def agent_stream_endpoint(
     request: AgentQueryRequest,
+    db: Session = Depends(get_db),
 ):
     """Stream reasoning steps and final grounded answer using Server-Sent Events (SSE)."""
+    validate_agent_context(request, db)
     async def event_generator():
         try:
             yield f"data: {json.dumps({'event': 'start', 'query': request.query})}\n\n"

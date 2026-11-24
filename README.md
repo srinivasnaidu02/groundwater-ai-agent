@@ -114,7 +114,44 @@ AGENTIC_ENABLED=true
 
 ---
 
-## Quick Start Guide
+## INGRES-Agent Guided Interface & Form Layout
+
+The root page (`/`) features the **INGRES-Agent — Groundwater Virtual Assistant** guided layout:
+- **Header Card with 4px Teal Left Border**: Clear scope and official CGWB dynamic resource bounds.
+- **Guided Context Selectors**:
+  - `Assessment Year *` (default: 2025; options: 2020–2026).
+  - `State / Union Territory *` (all 36 States and UTs).
+  - `District (Optional)` (disabled until a state is selected; defaults to `State-level (no district)`).
+  - Native contextual `?` tooltips on every input.
+- **Natural-Language Question Card**: Text input with enter-to-submit and inline validation.
+- **Collapsible Example Questions**: Clickable examples that auto-populate question text and pre-select matching state, district, and assessment year.
+- **Verified Results View**: Separates verified empirical data from AI hydrogeological interpretations, with dynamic Recharts visualizers and collapsible ReAct reasoning traces.
+- **Slim Top Navigation & Drawer**: Root page provides a focused centered column with a top navigation bar and slide-out menu drawer, keeping all analytics dashboards (`/analytics`, `/historical`, `/coverage`) fully accessible.
+
+---
+
+## Metadata & Guided Query Endpoints
+
+### 1. Metadata Endpoints (Read-Only)
+- `GET /api/meta/years` — Returns all available assessment cycles (`2020`, `2022`, `2023`, `2024`, `2025`, `2026`).
+- `GET /api/meta/states` — Returns all available States and Union Territories.
+- `GET /api/meta/districts?state=<name>` — Returns districts for the requested state with alias normalization (e.g. `UP` &rarr; `Uttar Pradesh`).
+
+### 2. Guided Agent Query Endpoint
+`POST /api/agent/query`
+```json
+{
+  "query": "What is the groundwater extraction stage?",
+  "mode": "auto",
+  "year": 2025,
+  "state": "Punjab",
+  "district": "Ludhiana"
+}
+```
+- `year`, `state`, and `district` are validated against database records with strict 422 errors on unknown or mismatched inputs.
+- If the natural language question explicitly names another location or year, the explicit mention in the question takes precedence.
+
+---
 
 ### 1. Prerequisites
 - Python 3.11+

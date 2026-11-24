@@ -12,9 +12,13 @@ const api = axios.create({
   timeout: 30000,
 });
 
-export const getStates = () => api.get('/states');
-export const getDistricts = (state) => api.get(`/districts/${encodeURIComponent(state)}`);
-export const getAssessmentYears = () => api.get('/assessment-years');
+export const getStates = () => api.get('/meta/states');
+export const getDistricts = (state) => api.get(`/meta/districts?state=${encodeURIComponent(state)}`);
+export const getAssessmentYears = () => api.get('/meta/years');
+export const getYears = () => api.get('/meta/years');
+export const getMetaYears = () => api.get('/meta/years');
+export const getMetaStates = () => api.get('/meta/states');
+export const getMetaDistricts = (state) => api.get(`/meta/districts?state=${encodeURIComponent(state)}`);
 export const getHealth = () => api.get('/health');
 export const getMetadata = () => api.get('/metadata');
 export const getFunctions = () => api.get('/functions');
@@ -40,8 +44,21 @@ export const compareAssessmentYears = (state, year1 = '2020', year2 = '2026', di
 export const getModelComparison = () => api.get('/evaluation/model-comparison');
 
 // Agentic & Generative AI Endpoints
-export const queryAgent = (query, mode = 'auto', year = null, state = null, district = null) =>
-  api.post('/agent/query', { query, mode, year, state, district });
+export const queryAgent = (queryOrParams, mode = 'auto', year = null, state = null, district = null) => {
+  if (typeof queryOrParams === 'object' && queryOrParams !== null) {
+    const q = queryOrParams.query || queryOrParams.question;
+    return api.post('/agent/query', {
+      query: q,
+      mode: queryOrParams.mode || 'auto',
+      year: queryOrParams.year ? parseInt(queryOrParams.year, 10) : null,
+      state: queryOrParams.state || null,
+      district: (queryOrParams.district && queryOrParams.district !== 'State-level (no district)') ? queryOrParams.district : null,
+    });
+  }
+  const cleanDistrict = (district && district !== 'State-level (no district)') ? district : null;
+  const cleanYear = year ? parseInt(year, 10) : null;
+  return api.post('/agent/query', { query: queryOrParams, mode, year: cleanYear, state, district: cleanDistrict });
+};
 export const getAgentStatus = () => api.get('/agent/status');
 
 export default api;
