@@ -17,8 +17,9 @@ from backend.app.agentic.schemas import (
     NumericVerification,
 )
 from backend.app.agentic.synthesizer import GroundedSynthesizer, build_template_answer
-from backend.app.agentic.tools import ToolRegistry, default_tool_registry
+from backend.app.agentic.tools import ToolRegistry, default_tool_registry, ALIAS_MAP, STATE_ALIASES, ALL_STATES
 from backend.app.agentic.verifier import NumericVerifier
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,38 @@ Your task is to analyze complex or multi-part questions, devise a step-by-step q
 def _make_cache_key(tool_name: str, args: Dict[str, Any]) -> str:
     sorted_items = sorted((k, str(v)) for k, v in args.items())
     return f"{tool_name}::" + json.dumps(sorted_items)
+
+
+def _extract_query_overrides(query: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """Extract explicit year, state, or district from query text if present."""
+    q_lower = query.lower()
+
+    # Check explicit year
+    m_year = re.search(r"\b(2020|2022|2023|2024|2025|2026)\b", query)
+    q_year = m_year.group(1) if m_year else None
+
+    # Check explicit district first (so e.g. 'Ludhiana' infers Punjab if not specified)
+    q_dist = None
+    q_state = None
+    for alias, (mapped_dist, mapped_state) in ALIAS_MAP.items():
+        if re.search(r"\b" + re.escape(alias) + r"\b", q_lower):
+            q_dist = mapped_dist
+            q_state = mapped_state
+            break
+
+    # Check explicit state if not set by district
+    if not q_state:
+        for full_state in ALL_STATES:
+            if full_state.lower() in q_lower:
+                q_state = full_state
+                break
+    if not q_state:
+        for alias, full_state in STATE_ALIASES.items():
+            if re.search(r"\b" + re.escape(alias) + r"\b", q_lower):
+                q_state = full_state
+                break
+
+    return q_year, q_state, q_dist
 
 
 class AgenticOrchestrator:
@@ -75,9 +108,23 @@ class AgenticOrchestrator:
             )
 
         # RE-ACT LOOP
-        prompt_with_hints = f"User Question: {query}"
+        context_parts = []
         if hints:
-            prompt_with_hints += f"\nFilter hints: {json.dumps(hints)}"
+            if hints.get("year"):
+                context_parts.append(f"year: {hints['year']}")
+            if hints.get("state"):
+                context_parts.append(f"state: {hints['state']}")
+            if hints.get("district") and hints["district"] != "State-level (no district)":
+                context_parts.append(f"district: {hints['district']}")
+
+        if context_parts:
+            context_str = ", ".join(context_parts)
+            prompt_with_hints = (
+                f"{query}\n"
+                f"Selected context -> {context_str} (use as defaults if the question does not specify otherwise)."
+            )
+        else:
+            prompt_with_hints = query
 
         messages: List[Dict[str, Any]] = [
             {"role": "system", "content": ORCHESTRATOR_SYSTEM_PROMPT},
@@ -252,9 +299,14 @@ class AgenticOrchestrator:
     ) -> AgentQueryResponse:
         """Execute template pipeline using tools and evidence-only answers (no LLM)."""
         t0 = time.perf_counter()
-        state = (hints or {}).get("state") or ("Punjab" if "punjab" in query.lower() else "Bihar" if "bihar" in query.lower() else "Uttar Pradesh" if "uttar pradesh" in query.lower() or "prayagraj" in query.lower() else None)
-        district = (hints or {}).get("district") or ("Jalandhar" if "jalandhar" in query.lower() else "Patna" if "patna" in query.lower() else "Allahabad (Prayagraj)" if "prayagraj" in query.lower() else None)
-        year = (hints or {}).get("year") or ("2026" if "2026" in query else "2025")
+        q_year, q_state, q_dist = _extract_query_overrides(query)
+
+        # Question wins if explicit, otherwise fall back to hints/defaults
+        state = q_state or (hints or {}).get("state") or "Punjab"
+        district = q_dist or (hints or {}).get("district")
+        if district == "State-level (no district)":
+            district = None
+        year = str(q_year or (hints or {}).get("year") or "2025")
 
         evidence_items = []
         citations = set()

@@ -10,7 +10,7 @@ class AgentQueryRequest(BaseModel):
         default="auto",
         description="Execution mode: auto (default) | agentic | template"
     )
-    year: Optional[str] = Field(default=None, description="Optional assessment year filter hint")
+    year: Optional[int] = Field(default=None, description="Optional assessment year filter hint")
     state: Optional[str] = Field(default=None, description="Optional state filter hint")
     district: Optional[str] = Field(default=None, description="Optional district filter hint")
 
