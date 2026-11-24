@@ -101,16 +101,20 @@ class MockLLMClient(LLMClient):
             "summary": f"In Punjab, groundwater extraction stage reached {primary_val:.2f}% with 5 overexploited districts.",
             "numeric_breakdown": [
                 {
+                    "parameter": "Stage of Extraction",
                     "label": "Stage of Extraction",
                     "value": primary_val,
                     "unit": "%",
-                    "year": "2025"
+                    "year": "2025",
+                    "location": "Punjab"
                 },
                 {
+                    "parameter": "Extraction Change",
                     "label": "Extraction Change",
                     "value": secondary_val,
                     "unit": "%",
-                    "year": "2020-2026"
+                    "year": "2020-2026",
+                    "location": "Punjab"
                 }
             ],
             "trend_analysis": f"Extraction showed an upward trajectory of {secondary_val:.2f}% between 2020 and 2026.",

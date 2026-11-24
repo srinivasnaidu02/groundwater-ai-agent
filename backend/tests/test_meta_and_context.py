@@ -234,3 +234,27 @@ def test_context_validation_district_not_in_year():
     assert res.status_code == 422
     assert "has no groundwater assessment records in 'bihar' for year 2025" in res.json()["detail"].lower()
 
+
+def test_template_answer_includes_location_from_context():
+    """Verify that when question omits location, answer summary and breakdown explicitly include selected location."""
+    payload = {
+        "query": "how much groundwater extraction has been done",
+        "state": "Gujarat",
+        "district": "Ahmedabad",
+        "year": 2023,
+        "mode": "template",
+    }
+    res = client.post("/api/agent/query", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    summary = data["answer"]["summary"]
+    breakdown = data["answer"]["numeric_breakdown"]
+
+    assert "Ahmedabad, Gujarat" in summary
+    assert "2023" in summary
+    assert len(breakdown) >= 1
+    assert breakdown[0]["location"] == "Ahmedabad, Gujarat"
+    assert breakdown[0]["year"] == "2023"
+    assert breakdown[0]["value"] == 362500.0
+
+

@@ -77,33 +77,106 @@ def build_template_answer(query: str, evidence_items: List[Dict[str, Any]]) -> D
         year = str(item.get("year", "2025"))
         unit = str(item.get("unit", "Ham"))
 
+        # Resolve location from result values or execution arguments
+        loc = val_block.get("location") if isinstance(val_block, dict) else None
+        if not loc:
+            d = item.get("arguments", {}).get("district")
+            s = item.get("arguments", {}).get("state")
+            if d and s and d != "State-level (no district)":
+                loc = f"{d}, {s}"
+            elif s:
+                loc = s
+            elif d and d != "State-level (no district)":
+                loc = d
+            else:
+                loc = ""
+
         if isinstance(val_block, dict):
             if "stage_of_extraction_pct" in val_block:
                 pct = val_block["stage_of_extraction_pct"]
                 cat = val_block.get("assessment_category", "Over-Exploited")
-                breakdown.append({"label": "Stage of Extraction", "value": pct, "unit": "%", "year": year})
-                summary_parts.append(f"Stage of extraction is {pct:.2f}% ({cat}) for {year}.")
+                breakdown.append({
+                    "parameter": "Groundwater Extraction Stage",
+                    "label": "Stage of Extraction",
+                    "value": pct,
+                    "unit": "%",
+                    "year": year,
+                    "location": loc,
+                })
+                if loc:
+                    summary_parts.append(f"Groundwater extraction stage for {loc} in {year} is {pct:.2f}% ({cat}).")
+                else:
+                    summary_parts.append(f"Stage of extraction is {pct:.2f}% ({cat}) for {year}.")
 
             if "total_annual_extraction_ham" in val_block:
                 ext = val_block["total_annual_extraction_ham"]
-                breakdown.append({"label": "Total Extraction", "value": ext, "unit": "Ham", "year": year})
-                summary_parts.append(f"Total annual extraction: {ext:,.2f} Ham.")
+                breakdown.append({
+                    "parameter": "Total Annual Extraction",
+                    "label": "Total Extraction",
+                    "value": ext,
+                    "unit": "Ham",
+                    "year": year,
+                    "location": loc,
+                })
+                if loc:
+                    summary_parts.append(f"Total annual extraction for {loc} in {year} is {ext:,.2f} Ham.")
+                else:
+                    summary_parts.append(f"Total annual extraction: {ext:,.2f} Ham.")
 
             if "total_annual_recharge_ham" in val_block:
                 rech = val_block["total_annual_recharge_ham"]
-                breakdown.append({"label": "Total Recharge", "value": rech, "unit": "Ham", "year": year})
+                breakdown.append({
+                    "parameter": "Total Annual Recharge",
+                    "label": "Total Recharge",
+                    "value": rech,
+                    "unit": "Ham",
+                    "year": year,
+                    "location": loc,
+                })
+                if loc:
+                    summary_parts.append(f"Total annual recharge for {loc} in {year} is {rech:,.2f} Ham.")
+
+            if "annual_extractable_groundwater_ham" in val_block:
+                ext_res = val_block["annual_extractable_groundwater_ham"]
+                breakdown.append({
+                    "parameter": "Annual Extractable Resource",
+                    "label": "Annual Extractable Resource",
+                    "value": ext_res,
+                    "unit": "Ham",
+                    "year": year,
+                    "location": loc,
+                })
+                if loc:
+                    summary_parts.append(f"Annual extractable groundwater for {loc} in {year} is {ext_res:,.2f} Ham.")
 
             if "overexploited_count" in val_block:
                 cnt = val_block["overexploited_count"]
-                breakdown.append({"label": "Overexploited Units Count", "value": cnt, "unit": "Units", "year": year})
-                summary_parts.append(f"{cnt} assessment units are classified as Over-Exploited.")
+                breakdown.append({
+                    "parameter": "Overexploited Units Count",
+                    "label": "Overexploited Units Count",
+                    "value": cnt,
+                    "unit": "Units",
+                    "year": year,
+                    "location": loc,
+                })
+                if loc:
+                    summary_parts.append(f"In {loc} ({year}), {cnt} assessment units are classified as Over-Exploited.")
+                else:
+                    summary_parts.append(f"{cnt} assessment units are classified as Over-Exploited.")
 
             if "percent_change" in val_block and "difference" in val_block:
                 has_comparison = True
                 pchg = val_block["percent_change"]
                 diff = val_block["difference"]
-                breakdown.append({"label": "Extraction Change", "value": pchg, "unit": "%", "year": f"{val_block.get('year_1', {}).get('year', '')}-{val_block.get('year_2', {}).get('year', '')}"})
-                summary_parts.append(f"Between {val_block.get('year_1', {}).get('year', '')} and {val_block.get('year_2', {}).get('year', '')}, extraction changed by {pchg:.2f}% ({diff:+,.2f} Ham).")
+                breakdown.append({
+                    "parameter": "Extraction Change",
+                    "label": "Extraction Change",
+                    "value": pchg,
+                    "unit": "%",
+                    "year": f"{val_block.get('year_1', {}).get('year', '')}-{val_block.get('year_2', {}).get('year', '')}",
+                    "location": loc,
+                })
+                summary_parts.append(f"Between {val_block.get('year_1', {}).get('year', '')} and {val_block.get('year_2', {}).get('year', '')}, extraction in {loc or 'the region'} changed by {pchg:.2f}% ({diff:+,.2f} Ham).")
 
     summary_text = " ".join(summary_parts) if summary_parts else f"Verified groundwater metrics retrieved for query: {query}."
 
