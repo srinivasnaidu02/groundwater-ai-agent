@@ -153,21 +153,45 @@ def list_functions():
 
 @app.get("/api/meta/years", tags=["Metadata"])
 def get_meta_years(db: Session = Depends(get_db)):
-    """Returns list of all available assessment years."""
-    years = [y.year for y in db.query(AssessmentYear).order_by(AssessmentYear.year).all()]
+    """Returns list of active assessment years that have data records."""
+    active_years = (
+        db.query(AssessmentYear.year)
+        .join(GroundwaterResource, GroundwaterResource.assessment_year_id == AssessmentYear.id)
+        .distinct()
+        .order_by(AssessmentYear.year)
+        .all()
+    )
+    years = [y[0] for y in active_years]
+    if not years:
+        years = [y.year for y in db.query(AssessmentYear).filter(AssessmentYear.year != '2021').order_by(AssessmentYear.year).all()]
     return {"years": years, "assessment_years": years}
 
 
 @app.get("/api/meta/states", tags=["Metadata"])
-def get_meta_states(db: Session = Depends(get_db)):
-    """Returns list of all available States and Union Territories."""
+def get_meta_states(year: Optional[str] = None, db: Session = Depends(get_db)):
+    """Returns list of States and Union Territories for a given assessment year (or all)."""
+    if year and year.strip():
+        clean_year = year.strip()
+        ay = db.query(AssessmentYear).filter(AssessmentYear.year == clean_year).first()
+        if not ay:
+            return {"states": [], "year": year}
+        states = (
+            db.query(State.name)
+            .join(GroundwaterResource, GroundwaterResource.state_id == State.id)
+            .filter(GroundwaterResource.assessment_year_id == ay.id)
+            .distinct()
+            .order_by(State.name)
+            .all()
+        )
+        return {"states": [s[0] for s in states], "year": year}
+
     states = [s.name for s in db.query(State).order_by(State.name).all()]
-    return {"states": states}
+    return {"states": states, "year": year}
 
 
 @app.get("/api/meta/districts", tags=["Metadata"])
-def get_meta_districts(state: str, db: Session = Depends(get_db)):
-    """Returns list of districts for a given state with normalization."""
+def get_meta_districts(state: str, year: Optional[str] = None, db: Session = Depends(get_db)):
+    """Returns list of districts for a given state and optional assessment year."""
     if not state or not state.strip():
         raise HTTPException(status_code=400, detail="State parameter is required.")
     clean_state = state.strip()
@@ -179,14 +203,24 @@ def get_meta_districts(state: str, db: Session = Depends(get_db)):
         st = db.query(State).filter(State.name.ilike(f"%{clean_state}%")).first()
     if not st:
         raise HTTPException(status_code=404, detail=f"State '{state}' not found.")
+
+    query = db.query(District.name).filter(District.state_id == st.id)
+    if year and year.strip():
+        clean_year = year.strip()
+        ay = db.query(AssessmentYear).filter(AssessmentYear.year == clean_year).first()
+        if not ay:
+            return {"state": st.name, "districts": [], "year": year}
+        query = (
+            query.join(GroundwaterResource, GroundwaterResource.district_id == District.id)
+            .filter(GroundwaterResource.assessment_year_id == ay.id)
+        )
+
     districts = (
-        db.query(District.name)
-        .filter(District.state_id == st.id)
-        .distinct()
+        query.distinct()
         .order_by(District.name)
         .all()
     )
-    return {"state": st.name, "districts": [d[0] for d in districts]}
+    return {"state": st.name, "districts": [d[0] for d in districts], "year": year}
 
 
 # ──────────────────────────── History ────────────────────────────────────────
@@ -574,6 +608,7 @@ def validate_agent_context(request: AgentQueryRequest, db: Session):
             )
 
     # Validate year if present
+    ay = None
     if request.year is not None:
         valid_years = [y.year for y in db.query(AssessmentYear).all()]
         if str(request.year) not in valid_years:
@@ -581,6 +616,7 @@ def validate_agent_context(request: AgentQueryRequest, db: Session):
                 status_code=422,
                 detail=f"Assessment year '{request.year}' is invalid. Available years: {', '.join(sorted(valid_years))}"
             )
+        ay = db.query(AssessmentYear).filter(AssessmentYear.year == str(request.year)).first()
 
     # Validate state if present
     st = None
@@ -594,6 +630,20 @@ def validate_agent_context(request: AgentQueryRequest, db: Session):
                 status_code=422,
                 detail=f"State '{request.state}' is unknown."
             )
+        if ay:
+            state_record = (
+                db.query(GroundwaterResource.id)
+                .filter(
+                    GroundwaterResource.state_id == st.id,
+                    GroundwaterResource.assessment_year_id == ay.id,
+                )
+                .first()
+            )
+            if not state_record:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"State '{request.state}' has no groundwater assessment records for year {request.year}."
+                )
 
     # Validate district if present and state verified
     if district_val and district_val != "State-level (no district)" and st:
@@ -617,6 +667,20 @@ def validate_agent_context(request: AgentQueryRequest, db: Session):
                 status_code=422,
                 detail=f"District '{request.district}' not found in state '{st.name}'."
             )
+        if ay:
+            dist_record = (
+                db.query(GroundwaterResource.id)
+                .filter(
+                    GroundwaterResource.district_id == d.id,
+                    GroundwaterResource.assessment_year_id == ay.id,
+                )
+                .first()
+            )
+            if not dist_record:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"District '{request.district}' has no groundwater assessment records in '{st.name}' for year {request.year}."
+                )
 
 
 @app.post("/api/agent/query", response_model=AgentQueryResponse, tags=["Agentic AI"])

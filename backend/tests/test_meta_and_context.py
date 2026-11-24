@@ -164,3 +164,73 @@ def test_explicit_question_overrides_context():
         e["arguments"].get("state") == "Rajasthan"
         for e in data["evidence"]
     )
+
+
+def test_meta_states_filtered_by_year():
+    """Verify /api/meta/states filters available states according to the assessment year."""
+    # Year 2025 has benchmark subset of 13 states
+    res_2025 = client.get("/api/meta/states?year=2025")
+    assert res_2025.status_code == 200
+    states_2025 = res_2025.json()["states"]
+    assert len(states_2025) == 13
+    assert "Bihar" in states_2025
+    assert "Punjab" in states_2025
+    assert "Rajasthan" in states_2025
+    assert "Kerala" not in states_2025
+    assert "Assam" not in states_2025
+
+    # Year 2022 has comprehensive 31 states/UTs
+    res_2022 = client.get("/api/meta/states?year=2022")
+    assert res_2022.status_code == 200
+    states_2022 = res_2022.json()["states"]
+    assert len(states_2022) == 31
+    assert "Kerala" in states_2022
+    assert "Assam" in states_2022
+
+
+def test_meta_districts_filtered_by_year():
+    """Verify /api/meta/districts filters available districts according to state and year."""
+    # Bihar in 2025 has exactly 10 districts
+    res_bihar_2025 = client.get("/api/meta/districts?state=Bihar&year=2025")
+    assert res_bihar_2025.status_code == 200
+    dists_2025 = res_bihar_2025.json()["districts"]
+    assert len(dists_2025) == 10
+    assert "Patna" in dists_2025
+    assert "Gaya" in dists_2025
+    assert "Katihar" not in dists_2025
+
+    # Bihar in 2022 has comprehensive 41 districts (including Katihar, Purnia, etc.)
+    res_bihar_2022 = client.get("/api/meta/districts?state=Bihar&year=2022")
+    assert res_bihar_2022.status_code == 200
+    dists_2022 = res_bihar_2022.json()["districts"]
+    assert len(dists_2022) >= 38
+    assert "Patna" in dists_2022
+    assert "Katihar" in dists_2022
+
+
+def test_context_validation_state_not_in_year():
+    """Verify context validation rejects state that has no records for the given year."""
+    # Kerala is only in 2022, not in 2025
+    payload = {
+        "query": "Show extraction summary",
+        "state": "Kerala",
+        "year": 2025,
+    }
+    res = client.post("/api/agent/query", json=payload)
+    assert res.status_code == 422
+    assert "has no groundwater assessment records for year 2025" in res.json()["detail"].lower()
+
+
+def test_context_validation_district_not_in_year():
+    """Verify context validation rejects district not present in chosen assessment year."""
+    # Katihar exists in Bihar in 2022, but NOT in 2025
+    payload = {
+        "query": "Show extraction summary",
+        "state": "Bihar",
+        "district": "Katihar",
+        "year": 2025,
+    }
+    res = client.post("/api/agent/query", json=payload)
+    assert res.status_code == 422
+    assert "has no groundwater assessment records in 'bihar' for year 2025" in res.json()["detail"].lower()
+

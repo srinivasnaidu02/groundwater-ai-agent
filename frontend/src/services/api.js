@@ -12,13 +12,17 @@ const api = axios.create({
   timeout: 30000,
 });
 
-export const getStates = () => api.get('/meta/states');
-export const getDistricts = (state) => api.get(`/meta/districts?state=${encodeURIComponent(state)}`);
+export const getStates = (year = null) =>
+  api.get(`/meta/states${year ? `?year=${encodeURIComponent(year)}` : ''}`);
+export const getDistricts = (state, year = null) =>
+  api.get(`/meta/districts?state=${encodeURIComponent(state)}${year ? `&year=${encodeURIComponent(year)}` : ''}`);
 export const getAssessmentYears = () => api.get('/meta/years');
 export const getYears = () => api.get('/meta/years');
 export const getMetaYears = () => api.get('/meta/years');
-export const getMetaStates = () => api.get('/meta/states');
-export const getMetaDistricts = (state) => api.get(`/meta/districts?state=${encodeURIComponent(state)}`);
+export const getMetaStates = (year = null) =>
+  api.get(`/meta/states${year ? `?year=${encodeURIComponent(year)}` : ''}`);
+export const getMetaDistricts = (state, year = null) =>
+  api.get(`/meta/districts?state=${encodeURIComponent(state)}${year ? `&year=${encodeURIComponent(year)}` : ''}`);
 export const getHealth = () => api.get('/health');
 export const getMetadata = () => api.get('/metadata');
 export const getFunctions = () => api.get('/functions');
