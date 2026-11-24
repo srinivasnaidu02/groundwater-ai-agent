@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   BarChart2,
   TrendingUp,
-  Layers,
   ChevronDown,
   ChevronUp,
   Database,
@@ -22,7 +21,6 @@ import {
 } from 'recharts';
 
 export default function ResultsView({ result, loading, error }) {
-  const [expandedTrace, setExpandedTrace] = useState(false);
   const [expandedProvenance, setExpandedProvenance] = useState(false);
 
   if (loading) {
@@ -213,45 +211,6 @@ export default function ResultsView({ result, loading, error }) {
           </div>
         )}
       </div>
-
-      {/* Collapsible Reasoning Trace */}
-      {steps.length > 0 && (
-        <div className="rounded-lg border border-slate-800/80 bg-[#0f1f33] overflow-hidden text-xs">
-          <button
-            type="button"
-            onClick={() => setExpandedTrace((prev) => !prev)}
-            className="w-full px-4 py-3 flex items-center justify-between text-slate-300 hover:text-white hover:bg-slate-800/30 transition-all font-medium"
-          >
-            <span className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-purple-400" />
-              <span>ReAct Reasoning Trace ({steps.length} {steps.length === 1 ? 'step' : 'steps'})</span>
-            </span>
-            {expandedTrace ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-
-          {expandedTrace && (
-            <div className="p-4 border-t border-slate-800/80 space-y-2.5 bg-[#0b1a2d]">
-              {steps.map((st, sIdx) => (
-                <div key={sIdx} className="p-3 rounded-md bg-[#091522] border border-slate-800 space-y-1 font-mono text-[11px]">
-                  <div className="flex items-center justify-between text-slate-400">
-                    <span className="font-semibold text-purple-300">
-                      Step {st.step_number}: Tool '{st.tool || st.tool_called}'
-                    </span>
-                    <span>{st.latency_ms} ms</span>
-                  </div>
-                  <p className="text-slate-300 font-sans">{st.thought}</p>
-                  {st.arguments && Object.keys(st.arguments).length > 0 && (
-                    <p className="text-slate-400 text-[10px]">
-                      Args: {JSON.stringify(st.arguments)}
-                    </p>
-                  )}
-                  <p className="text-teal-400 text-[10px]">{st.result_summary}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Collapsible Data Provenance */}
       {citations.length > 0 && (
