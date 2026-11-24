@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   BarChart2,
   TrendingUp,
-  Info,
   Layers,
   ChevronDown,
   ChevronUp,
@@ -214,36 +213,6 @@ export default function ResultsView({ result, loading, error }) {
           </div>
         )}
       </div>
-
-      {/* AI Hydrogeological Interpretation & Policy Guidance (Amber Panel) */}
-      {(answer.interpretation || answer.policy_recommendations?.length > 0) && (
-        <div className="bg-[#0f1f33] rounded-lg p-5 border border-amber-500/25 shadow-md space-y-3">
-          <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider">
-            <Info className="w-4 h-4 text-amber-400" />
-            AI Hydrogeological Interpretation & Policy Guidance
-          </div>
-          <p className="text-[11px] text-amber-300/80 italic">
-            Notice: General hydrogeological principles and AI conservation suggestions; not official CGWB causal determinations or administrative orders.
-          </p>
-
-          {answer.interpretation && (
-            <p className="text-xs text-slate-300 leading-relaxed font-sans">
-              {answer.interpretation}
-            </p>
-          )}
-
-          {answer.policy_recommendations?.length > 0 && (
-            <div className="space-y-1.5 pt-2 border-t border-slate-800/60">
-              <p className="text-xs font-medium text-slate-200">Recommended Conservation Pathways:</p>
-              <ul className="space-y-1 text-xs text-slate-300 list-disc list-inside">
-                {answer.policy_recommendations.map((rec, rIdx) => (
-                  <li key={rIdx} className="leading-relaxed">{rec}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Collapsible Reasoning Trace */}
       {steps.length > 0 && (
