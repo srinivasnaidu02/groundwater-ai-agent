@@ -231,15 +231,45 @@ def build_template_answer(query: str, evidence_items: List[Dict[str, Any]]) -> D
                 has_comparison = True
                 pchg = val_block["percent_change"]
                 diff = val_block["difference"]
+                param_name = str(val_block.get("parameter", "extraction")).capitalize()
+                c_unit = str(val_block.get("unit", unit))
+                y1_obj = val_block.get("year_1", {}) if isinstance(val_block.get("year_1"), dict) else {}
+                y2_obj = val_block.get("year_2", {}) if isinstance(val_block.get("year_2"), dict) else {}
+                y1_str = str(y1_obj.get("year", ""))
+                y2_str = str(y2_obj.get("year", ""))
+
+                if "value" in y1_obj and y1_obj["value"] is not None:
+                    breakdown.append({
+                        "parameter": f"{param_name} ({y1_str})",
+                        "label": f"{param_name} ({y1_str})",
+                        "value": y1_obj["value"],
+                        "unit": c_unit,
+                        "year": y1_str,
+                        "location": loc,
+                    })
+                if "value" in y2_obj and y2_obj["value"] is not None:
+                    breakdown.append({
+                        "parameter": f"{param_name} ({y2_str})",
+                        "label": f"{param_name} ({y2_str})",
+                        "value": y2_obj["value"],
+                        "unit": c_unit,
+                        "year": y2_str,
+                        "location": loc,
+                    })
+
                 breakdown.append({
-                    "parameter": "Extraction Change",
-                    "label": "Extraction Change",
+                    "parameter": f"{param_name} Change",
+                    "label": f"{param_name} Change",
                     "value": pchg,
                     "unit": "%",
-                    "year": f"{val_block.get('year_1', {}).get('year', '')}-{val_block.get('year_2', {}).get('year', '')}",
+                    "year": f"{y1_str}-{y2_str}",
                     "location": loc,
                 })
-                summary_parts.append(f"Between {val_block.get('year_1', {}).get('year', '')} and {val_block.get('year_2', {}).get('year', '')}, extraction in {loc or 'the region'} changed by {pchg:.2f}% ({diff:+,.2f} Ham).")
+                unit_str = f" {c_unit}" if c_unit != "%" else "%"
+                diff_str = f"{diff:+.2f}{unit_str}" if c_unit == "%" else f"{diff:+,.2f} Ham"
+                summary_parts.append(
+                    f"Between {y1_str} and {y2_str}, groundwater {param_name.lower()} in {loc or 'the region'} changed by {pchg:.2f}% ({diff_str})."
+                )
 
     if comparative_summaries:
         summary_text = " ".join(comparative_summaries)

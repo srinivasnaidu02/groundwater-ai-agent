@@ -131,30 +131,40 @@ class MockLLMClient(LLMClient):
 
         # Synthesis JSON generation
         if "Evidence Ledger:" in user_msg or "evidence" in user_msg.lower():
-            import re
-            try:
-                ledger_match = re.search(r"Evidence Ledger:\s*(\[.*?\])", user_msg, re.DOTALL)
-                if ledger_match:
-                    evidence_items = json.loads(ledger_match.group(1))
-                    from backend.app.agentic.synthesizer import build_template_answer
-                    ans_dict = build_template_answer(user_msg[:100], evidence_items)
-                    return LLMResponse(content=json.dumps(ans_dict), tool_calls=None)
-            except Exception:
-                pass
-        primary_val = 101.75
-        secondary_val = 13.24
-        # Parse from evidence if available in user message
-        if "Evidence Ledger:" in user_msg or "evidence" in user_msg.lower():
-            import re
-            nums = re.findall(r"\b\d+(?:\.\d+)?\b", user_msg)
-            float_nums = [float(n) for n in nums if float(n) not in [2020.0, 2022.0, 2025.0, 2026.0]]
-            if float_nums:
-                primary_val = float_nums[0]
-                if len(float_nums) > 1:
-                    secondary_val = float_nums[1]
+            start_marker = "Evidence Ledger:" if "Evidence Ledger:" in user_msg else "evidence"
+            start_idx = user_msg.find(start_marker)
+            if start_idx != -1:
+                bracket_start = user_msg.find("[", start_idx)
+                bracket_end = user_msg.rfind("]")
+                if bracket_start != -1 and bracket_end != -1 and bracket_end > bracket_start:
+                    ledger_str = user_msg[bracket_start:bracket_end + 1]
+                    try:
+                        evidence_items = json.loads(ledger_str)
+                        from backend.app.agentic.synthesizer import build_template_answer
+                        query_line = user_msg[:start_idx].strip()
+                        if query_line.startswith("User Query:"):
+                            query_line = query_line[len("User Query:"):].strip()
+                        ans_dict = build_template_answer(query_line, evidence_items)
+                        return LLMResponse(content=json.dumps(ans_dict), tool_calls=None)
+                    except Exception as e:
+                        logger.warning(f"MockLLMClient JSON parse error: {e}")
+
+        # Fallback synthesis: extract actual location from query
+        try:
+            from backend.app.agentic.query_parser import extract_locations
+            loc_objs = extract_locations(user_msg)
+            target_loc = loc_objs[0].canonical_str() if loc_objs else "the assessment area"
+        except Exception:
+            target_loc = "the assessment area"
+
+        ignored_years = {2020.0, 2021.0, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0}
+        nums = re.findall(r"\b\d+(?:\.\d+)?\b", user_msg)
+        float_nums = [float(n) for n in nums if float(n) not in ignored_years]
+        primary_val = float_nums[0] if float_nums else 101.75
+        secondary_val = float_nums[1] if len(float_nums) > 1 else 13.24
 
         default_json = json.dumps({
-            "summary": f"In Punjab, groundwater extraction stage reached {primary_val:.2f}% with 5 overexploited districts.",
+            "summary": f"In {target_loc}, groundwater assessment indicates verified parameters from official records.",
             "numeric_breakdown": [
                 {
                     "parameter": "Stage of Extraction",
@@ -162,22 +172,14 @@ class MockLLMClient(LLMClient):
                     "value": primary_val,
                     "unit": "%",
                     "year": "2025",
-                    "location": "Punjab"
-                },
-                {
-                    "parameter": "Extraction Change",
-                    "label": "Extraction Change",
-                    "value": secondary_val,
-                    "unit": "%",
-                    "year": "2020-2026",
-                    "location": "Punjab"
+                    "location": target_loc,
                 }
             ],
-            "trend_analysis": f"Extraction showed an upward trajectory of {secondary_val:.2f}% between 2020 and 2026.",
-            "interpretation": "[General Hydrogeological Context - Not from CGWB Data] High extraction is driven by intense agricultural irrigation and tubewell pumping.",
+            "trend_analysis": f"Assessment indicates {secondary_val:.2f}% change across monitoring cycles.",
+            "interpretation": "[General Hydrogeological Context - Not from CGWB Data] Hydrogeological assessment based on verified CGWB data.",
             "policy_recommendations": [
-                "[AI Suggestion - Not CGWB Guidance] Expand micro-irrigation systems across over-exploited blocks.",
-                "[AI Suggestion - Not CGWB Guidance] Promote crop diversification to lower water consumption."
+                "[AI Suggestion - Not CGWB Guidance] Expand micro-irrigation systems across water-stressed blocks.",
+                "[AI Suggestion - Not CGWB Guidance] Promote artificial recharge structures and rainwater harvesting."
             ],
             "limitations": [
                 "2026 data represents a benchmark projection model."

@@ -398,8 +398,15 @@ class AgenticOrchestrator:
                 state=(hints or {}).get("state") or "Maharashtra",
                 district=(hints or {}).get("district"),
             )
-            m = parsed.metrics[0] if parsed.metrics else "stage_of_extraction"
-            param = "stage" if m == "stage_of_extraction" else ("recharge" if m == "recharge" else "extraction")
+            # Prioritize stage if specified in query
+            if "stage" in query.lower() or "stage_of_extraction" in parsed.metrics:
+                param = "stage"
+            elif "recharge" in query.lower() or "recharge" in parsed.metrics:
+                param = "recharge"
+            elif "extractable" in query.lower() or "extractable_resource" in parsed.metrics:
+                param = "extractable"
+            else:
+                param = "extraction"
             t_args = {
                 "state": loc.state,
                 "district": loc.district,

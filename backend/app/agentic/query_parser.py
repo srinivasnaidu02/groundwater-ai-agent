@@ -120,6 +120,10 @@ def extract_locations(question: str, selected_state: Optional[str] = None) -> Li
     if not question:
         return []
 
+    # Strip any appended selected context instructions before parsing query entities
+    if "Selected context ->" in question:
+        question = question.split("Selected context ->")[0].strip()
+
     catalog = _get_location_catalog()
     q_text = question
     q_lower = question.lower()
@@ -195,6 +199,14 @@ def extract_locations(question: str, selected_state: Optional[str] = None) -> Li
             seen_keys.add(key)
             result.append(loc)
 
+    # If a district was matched, remove standalone parent state entries (e.g., Pune and Maharashtra -> Pune, Maharashtra)
+    district_states = {loc.state.lower() for loc in result if loc.district}
+    if district_states:
+        result = [
+            loc for loc in result
+            if loc.district or loc.state.lower() not in district_states
+        ]
+
     return result
 
 
@@ -202,6 +214,9 @@ def extract_metrics(question: str) -> List[str]:
     """Extract list of requested groundwater metrics from {extraction, recharge, extractable_resource, stage_of_extraction, category}."""
     if not question:
         return []
+
+    if "Selected context ->" in question:
+        question = question.split("Selected context ->")[0].strip()
 
     q_lower = question.lower()
     metrics: List[str] = []
@@ -237,6 +252,10 @@ def extract_years(question: str) -> List[str]:
     """Extract and validate assessment cycles mentioned in query."""
     if not question:
         return []
+
+    if "Selected context ->" in question:
+        question = question.split("Selected context ->")[0].strip()
+
     matches = re.findall(r"\b(2020|2022|2023|2024|2025|2026)\b", question)
     return sorted(list(dict.fromkeys(matches)))
 
