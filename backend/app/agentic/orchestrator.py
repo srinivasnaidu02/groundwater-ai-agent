@@ -13,12 +13,21 @@ from backend.app.agentic.schemas import (
     AgentQueryRequest,
     AgentQueryResponse,
     AgentStep,
+    CompletenessReport,
     EvidenceItem,
     NumericVerification,
 )
 from backend.app.agentic.synthesizer import GroundedSynthesizer, build_template_answer
 from backend.app.agentic.tools import ToolRegistry, default_tool_registry, ALIAS_MAP, STATE_ALIASES, ALL_STATES
 from backend.app.agentic.verifier import NumericVerifier
+from backend.app.agentic.query_parser import parse_query, LocationEntity
+from backend.app.agentic.comparison_helper import (
+    compute_comparison_matrix,
+    check_completeness,
+    METRIC_CONFIG,
+    _matches_location,
+    extract_metric_value,
+)
 import re
 
 logger = logging.getLogger(__name__)
@@ -97,6 +106,9 @@ class AgenticOrchestrator:
         citations: Set[str] = set()
         cache: Dict[str, Dict[str, Any]] = {}
         tool_call_counts: Dict[str, int] = {}
+
+        parsed = parse_query(query, hints=hints)
+        year = parsed.years[0] if parsed.years else str((hints or {}).get("year") or "2025")
 
         # FAST PATH: Template mode (no LLM call)
         if mode == "template" or not self.config.has_api_key():
@@ -212,7 +224,7 @@ class AgenticOrchestrator:
                     "arguments": tc_call.arguments,
                     "result": res,
                     "unit": res.get("unit", "Ham"),
-                    "year": res.get("year", "2025"),
+                    "year": res.get("year", year),
                     "source": res.get("source", "CGWB National Compilation"),
                     "verification": res.get("verification", "CGWB-verified"),
                 }
@@ -235,18 +247,88 @@ class AgenticOrchestrator:
         if step_num > self.config.AGENT_MAX_STEPS:
             partial_evidence = True
 
+        # Precompute comparison data & derived arithmetic
+        comparison_data, derived_ev = compute_comparison_matrix(
+            locations=parsed.locations,
+            metrics=parsed.metrics,
+            year=year,
+            evidence_items=evidence_items,
+        )
+        if derived_ev:
+            evidence_items.extend(derived_ev)
+
+        # Completeness Guard
+        completeness_rep = check_completeness(parsed.locations, parsed.metrics, evidence_items)
+        if not completeness_rep.complete:
+            # (1) Try one extra tool round to fetch missing data
+            missing_recovered = False
+            for loc in parsed.locations:
+                for m in parsed.metrics:
+                    cfg = METRIC_CONFIG.get(m)
+                    if not cfg:
+                        continue
+                    has_it = any(
+                        _matches_location(it, loc) and extract_metric_value(it, m) is not None
+                        for it in evidence_items
+                    )
+                    if not has_it:
+                        t_name = cfg["tool"]
+                        t_args = {"state": loc.state, "assessment_year": year}
+                        if loc.district:
+                            t_args["district"] = loc.district
+                        try:
+                            t_res = self.tool_registry.run(t_name, **t_args)
+                            if not t_res.get("error"):
+                                evidence_items.append({
+                                    "tool_name": t_name,
+                                    "arguments": t_args,
+                                    "result": t_res,
+                                    "unit": t_res.get("unit", cfg["unit"]),
+                                    "year": t_res.get("year", year),
+                                    "source": t_res.get("source", "CGWB National Compilation"),
+                                    "verification": t_res.get("verification", "CGWB-verified"),
+                                })
+                                missing_recovered = True
+                        except Exception as ex:
+                            logger.warning(f"Error fetching missing data: {ex}")
+
+            if missing_recovered:
+                c_data, d_ev = compute_comparison_matrix(parsed.locations, parsed.metrics, year, evidence_items)
+                if c_data:
+                    comparison_data = c_data
+                if d_ev:
+                    evidence_items.extend(d_ev)
+                completeness_rep = check_completeness(parsed.locations, parsed.metrics, evidence_items)
+
         # SYNTHESIS & VERIFICATION
         answer = await self.synthesizer.synthesize(query=query, evidence_items=evidence_items)
         if partial_evidence:
             answer["partial"] = True
 
+        # If incomplete, record in limitations
+        if not completeness_rep.complete:
+            if "limitations" not in answer or not isinstance(answer["limitations"], list):
+                answer["limitations"] = []
+            for miss in completeness_rep.missing:
+                limit_msg = f"Data for {miss} could not be retrieved from official CGWB compilation."
+                if limit_msg not in answer["limitations"]:
+                    answer["limitations"].append(limit_msg)
+
+        # Populate missing location in numeric breakdown
+        for row in answer.get("numeric_breakdown", []):
+            if not row.get("location"):
+                if parsed.locations:
+                    row["location"] = parsed.locations[0].canonical_str()
+                elif (hints or {}).get("state"):
+                    st = hints["state"]
+                    dt = hints.get("district")
+                    row["location"] = f"{dt}, {st}" if dt and dt != "State-level (no district)" else st
+
         ver_res = self.verifier.verify(answer, evidence_items)
 
         # Regeneration attempt if unverified numbers detected
         if not ver_res.passed:
-            import re
-            unverified_nums = [n for n in ver_res.checked_numbers if n not in self.verifier.verify(answer, evidence_items).checked_numbers]
-            logger.info(f"Verification failed on numbers. Attempting single regeneration.")
+            logger.info("Verification failed on numbers. Attempting single regeneration.")
             regen_answer = await self.synthesizer.regenerate_with_flags(
                 query=query,
                 evidence_items=evidence_items,
@@ -286,6 +368,9 @@ class AgenticOrchestrator:
             evidence=evidence_models,
             citations=list(citations),
             verification=ver_res,
+            completeness=completeness_rep,
+            comparison_data=comparison_data,
+            override_note=parsed.override_note,
             latency_ms=total_latency,
             model=self.config.LLM_MODEL,
         )
@@ -299,40 +384,66 @@ class AgenticOrchestrator:
     ) -> AgentQueryResponse:
         """Execute template pipeline using tools and evidence-only answers (no LLM)."""
         t0 = time.perf_counter()
-        q_year, q_state, q_dist = _extract_query_overrides(query)
+        parsed = parse_query(query, hints=hints)
+        year = parsed.years[0] if parsed.years else str((hints or {}).get("year") or "2025")
 
-        # Question wins if explicit, otherwise fall back to hints/defaults
-        state = q_state or (hints or {}).get("state") or "Punjab"
-        district = q_dist or (hints or {}).get("district")
-        if district == "State-level (no district)":
-            district = None
-        year = str(q_year or (hints or {}).get("year") or "2025")
+        evidence_items: List[Dict[str, Any]] = []
+        citations: Set[str] = set()
+        steps: List[AgentStep] = []
+        step_idx = 1
 
-        evidence_items = []
-        citations = set()
-        steps = []
+        if parsed.intent == "compare_years" and len(parsed.years) >= 2:
+            # Multi-year comparison
+            loc = parsed.locations[0] if parsed.locations else LocationEntity(
+                state=(hints or {}).get("state") or "Maharashtra",
+                district=(hints or {}).get("district"),
+            )
+            m = parsed.metrics[0] if parsed.metrics else "stage_of_extraction"
+            param = "stage" if m == "stage_of_extraction" else ("recharge" if m == "recharge" else "extraction")
+            t_args = {
+                "state": loc.state,
+                "district": loc.district,
+                "parameter": param,
+                "year1": parsed.years[0],
+                "year2": parsed.years[1],
+            }
+            t_res = self.tool_registry.run("compare_assessment_years", **t_args)
+            steps.append(
+                AgentStep(
+                    step_number=1,
+                    thought=f"Template execution: comparing {parsed.years[0]} and {parsed.years[1]} for {loc.canonical_str()}",
+                    tool_called="compare_assessment_years",
+                    arguments=t_args,
+                    result_summary="Template tool execution completed",
+                    latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                )
+            )
+            evidence_items.append({
+                "tool_name": "compare_assessment_years",
+                "arguments": t_args,
+                "result": t_res,
+                "unit": t_res.get("unit", "%" if param == "stage" else "Ham"),
+                "year": f"{parsed.years[0]}-{parsed.years[1]}",
+                "source": t_res.get("source", "CGWB National Compilation"),
+                "verification": t_res.get("verification", "CGWB-verified"),
+            })
+            if t_res.get("source"):
+                citations.add(t_res["source"])
 
-        # Check for multi-state comparison in template mode
-        found_states = [s for s in ALL_STATES if re.search(r"\b" + re.escape(s) + r"\b", query, re.I)]
-        if len(found_states) >= 2 and ("compare" in query.lower() or "between" in query.lower()):
-            s1, s2 = found_states[0], found_states[1]
-            tools_to_run = []
-            if "extraction" in query.lower():
-                tools_to_run.append("get_groundwater_extraction")
-            if "recharge" in query.lower():
-                tools_to_run.append("get_groundwater_recharge")
-            if not tools_to_run:
-                tools_to_run.append("get_stage_of_extraction")
-
-            step_idx = 1
-            for st_target in [s1, s2]:
-                for t_name in tools_to_run:
-                    t_args = {"state": st_target, "assessment_year": year}
+        elif parsed.intent == "compare_locations" or len(parsed.locations) >= 2:
+            # Multi-location comparison
+            for loc in parsed.locations:
+                for m in parsed.metrics:
+                    cfg = METRIC_CONFIG.get(m)
+                    t_name = cfg["tool"] if cfg else "get_groundwater_extraction"
+                    t_args = {"state": loc.state, "assessment_year": year}
+                    if loc.district:
+                        t_args["district"] = loc.district
                     t_res = self.tool_registry.run(t_name, **t_args)
                     steps.append(
                         AgentStep(
                             step_number=step_idx,
-                            thought=f"Template execution: running {t_name} for {st_target}",
+                            thought=f"Template execution: running {t_name} for {loc.canonical_str()}",
                             tool_called=t_name,
                             arguments=t_args,
                             result_summary="Template tool execution completed",
@@ -344,7 +455,7 @@ class AgenticOrchestrator:
                         "tool_name": t_name,
                         "arguments": t_args,
                         "result": t_res,
-                        "unit": t_res.get("unit", "Ham"),
+                        "unit": t_res.get("unit", cfg["unit"] if cfg else "Ham"),
                         "year": t_res.get("year", year),
                         "source": t_res.get("source", "CGWB National Compilation"),
                         "verification": t_res.get("verification", "CGWB-verified"),
@@ -352,48 +463,122 @@ class AgenticOrchestrator:
                     if t_res.get("source"):
                         citations.add(t_res["source"])
         else:
-            # Determine single tool to call
-            tool_name = "get_stage_of_extraction"
-            tool_args: Dict[str, Any] = {"state": state or "Punjab", "assessment_year": year}
-            if district:
-                tool_args["district"] = district
+            # Single lookup
+            loc = parsed.locations[0] if parsed.locations else LocationEntity(
+                state=(hints or {}).get("state") or "Punjab",
+                district=(hints or {}).get("district"),
+            )
+            m = parsed.metrics[0] if parsed.metrics else "extraction"
+            cfg = METRIC_CONFIG.get(m)
+            t_name = cfg["tool"] if cfg else "get_groundwater_extraction"
+            t_args = {"state": loc.state, "assessment_year": year}
+            if loc.district and loc.district != "State-level (no district)":
+                t_args["district"] = loc.district
 
-            if "recharge" in query.lower():
-                tool_name = "get_groundwater_recharge"
-            elif "extraction" in query.lower():
-                tool_name = "get_groundwater_extraction"
-            elif "overexploited" in query.lower() or "over-exploited" in query.lower():
-                tool_name = "get_overexploited_units"
-                tool_args = {"state": state or "Punjab", "assessment_year": year}
+            if "overexploited" in query.lower() or "over-exploited" in query.lower():
+                t_name = "get_overexploited_units"
+                t_args = {"state": loc.state, "assessment_year": year}
 
-            res = self.tool_registry.run(tool_name, **tool_args)
+            t_res = self.tool_registry.run(t_name, **t_args)
             dur = round((time.perf_counter() - t0) * 1000.0, 2)
 
             steps.append(
                 AgentStep(
                     step_number=1,
                     thought="Template execution path: running tool",
-                    tool_called=tool_name,
-                    arguments=tool_args,
+                    tool_called=t_name,
+                    arguments=t_args,
                     result_summary="Template tool execution completed",
                     latency_ms=dur,
                 )
             )
 
-            ev_entry = {
-                "tool_name": tool_name,
-                "arguments": tool_args,
-                "result": res,
-                "unit": res.get("unit", "Ham"),
-                "year": res.get("year", year),
-                "source": res.get("source", "CGWB National Compilation"),
-                "verification": res.get("verification", "CGWB-verified"),
-            }
-            evidence_items.append(ev_entry)
-            if res.get("source"):
-                citations.add(res["source"])
+            evidence_items.append({
+                "tool_name": t_name,
+                "arguments": t_args,
+                "result": t_res,
+                "unit": t_res.get("unit", cfg["unit"] if cfg else "Ham"),
+                "year": t_res.get("year", year),
+                "source": t_res.get("source", "CGWB National Compilation"),
+                "verification": t_res.get("verification", "CGWB-verified"),
+            })
+            if t_res.get("source"):
+                citations.add(t_res["source"])
+
+        # Precompute comparison data & derived arithmetic
+        comparison_data, derived_ev = compute_comparison_matrix(
+            locations=parsed.locations,
+            metrics=parsed.metrics,
+            year=year,
+            evidence_items=evidence_items,
+        )
+        if derived_ev:
+            evidence_items.extend(derived_ev)
+
+        # Completeness Guard
+        completeness_rep = check_completeness(parsed.locations, parsed.metrics, evidence_items)
+        if not completeness_rep.complete:
+            # (1) Try one extra tool round to fetch missing data
+            missing_recovered = False
+            for loc in parsed.locations:
+                for m in parsed.metrics:
+                    cfg = METRIC_CONFIG.get(m)
+                    if not cfg:
+                        continue
+                    has_it = any(
+                        _matches_location(it, loc) and extract_metric_value(it, m) is not None
+                        for it in evidence_items
+                    )
+                    if not has_it:
+                        t_name = cfg["tool"]
+                        t_args = {"state": loc.state, "assessment_year": year}
+                        if loc.district:
+                            t_args["district"] = loc.district
+                        try:
+                            t_res = self.tool_registry.run(t_name, **t_args)
+                            if not t_res.get("error"):
+                                evidence_items.append({
+                                    "tool_name": t_name,
+                                    "arguments": t_args,
+                                    "result": t_res,
+                                    "unit": t_res.get("unit", cfg["unit"]),
+                                    "year": t_res.get("year", year),
+                                    "source": t_res.get("source", "CGWB National Compilation"),
+                                    "verification": t_res.get("verification", "CGWB-verified"),
+                                })
+                                missing_recovered = True
+                        except Exception as ex:
+                            logger.warning(f"Error fetching missing data: {ex}")
+
+            if missing_recovered:
+                c_data, d_ev = compute_comparison_matrix(parsed.locations, parsed.metrics, year, evidence_items)
+                if c_data:
+                    comparison_data = c_data
+                if d_ev:
+                    evidence_items.extend(d_ev)
+                completeness_rep = check_completeness(parsed.locations, parsed.metrics, evidence_items)
 
         answer = build_template_answer(query, evidence_items)
+
+        # If incomplete, record in limitations
+        if not completeness_rep.complete:
+            if "limitations" not in answer or not isinstance(answer["limitations"], list):
+                answer["limitations"] = []
+            for miss in completeness_rep.missing:
+                limit_msg = f"Data for {miss} could not be retrieved from official CGWB compilation."
+                if limit_msg not in answer["limitations"]:
+                    answer["limitations"].append(limit_msg)
+
+        # Populate missing location in numeric breakdown
+        for row in answer.get("numeric_breakdown", []):
+            if not row.get("location"):
+                if parsed.locations:
+                    row["location"] = parsed.locations[0].canonical_str()
+                elif (hints or {}).get("state"):
+                    st = hints["state"]
+                    dt = hints.get("district")
+                    row["location"] = f"{dt}, {st}" if dt and dt != "State-level (no district)" else st
+
         ver_res = self.verifier.verify(answer, evidence_items)
         if mode_used == "template_fallback":
             ver_res.fallback_used = True
@@ -408,6 +593,9 @@ class AgenticOrchestrator:
             evidence=evidence_models,
             citations=list(citations),
             verification=ver_res,
+            completeness=completeness_rep,
+            comparison_data=comparison_data,
+            override_note=parsed.override_note,
             latency_ms=total_latency,
             model="template-engine",
         )

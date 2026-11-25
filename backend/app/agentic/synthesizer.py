@@ -70,12 +70,50 @@ def build_template_answer(query: str, evidence_items: List[Dict[str, Any]]) -> D
 
     breakdown = []
     summary_parts = []
+    comparative_summaries = []
     has_comparison = False
 
     for item in evidence_items:
         val_block = item.get("result", {}).get("values") or item.get("values") or {}
         year = str(item.get("year", "2025"))
         unit = str(item.get("unit", "Ham"))
+
+        # Check for derived comparison calculations
+        if item.get("tool_name") == "compute_comparison_derived" and isinstance(val_block, dict):
+            has_comparison = True
+            param = val_block.get("parameter", "Metric")
+            l1 = val_block.get("location_1", "Location 1")
+            l2 = val_block.get("location_2", "Location 2")
+            v1 = val_block.get("value_1")
+            v2 = val_block.get("value_2")
+            abs_d = val_block.get("absolute_difference")
+            pct_d = val_block.get("percentage_difference")
+            higher = val_block.get("higher")
+
+            if abs_d is not None:
+                breakdown.append({
+                    "parameter": f"{param} Absolute Difference",
+                    "label": f"{param} Difference",
+                    "value": abs_d,
+                    "unit": unit,
+                    "year": year,
+                    "location": f"{l1} vs {l2}",
+                })
+            if pct_d is not None:
+                breakdown.append({
+                    "parameter": f"{param} % Difference",
+                    "label": f"{param} % Difference",
+                    "value": pct_d,
+                    "unit": "%",
+                    "year": year,
+                    "location": f"{l1} vs {l2}",
+                })
+
+            if v1 is not None and v2 is not None and pct_d is not None:
+                rel = "higher" if pct_d > 0 else ("lower" if pct_d < 0 else "equal")
+                comp_txt = f"In {year}, {l1}'s {param.lower()} ({v1:,.2f} {unit}) is {abs(pct_d):.2f}% {rel} than {l2}'s ({v2:,.2f} {unit})."
+                comparative_summaries.append(comp_txt)
+            continue
 
         # Resolve location from result values or execution arguments
         loc = val_block.get("location") if isinstance(val_block, dict) else None
@@ -203,7 +241,12 @@ def build_template_answer(query: str, evidence_items: List[Dict[str, Any]]) -> D
                 })
                 summary_parts.append(f"Between {val_block.get('year_1', {}).get('year', '')} and {val_block.get('year_2', {}).get('year', '')}, extraction in {loc or 'the region'} changed by {pchg:.2f}% ({diff:+,.2f} Ham).")
 
-    summary_text = " ".join(summary_parts) if summary_parts else f"Verified groundwater metrics retrieved for query: {query}."
+    if comparative_summaries:
+        summary_text = " ".join(comparative_summaries)
+    elif summary_parts:
+        summary_text = " ".join(summary_parts)
+    else:
+        summary_text = f"Verified groundwater metrics retrieved for query: {query}."
 
     return {
         "summary": summary_text,

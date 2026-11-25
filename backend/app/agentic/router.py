@@ -32,7 +32,19 @@ def decide_route(query: str, mode: Optional[str] = "auto") -> str:
     if mode == "template":
         return "template"
 
-    # auto mode heuristics
+    # Auto mode heuristics
+    try:
+        from backend.app.agentic.query_parser import parse_query
+        parsed = parse_query(query)
+        if (
+            len(parsed.locations) >= 2
+            or len(parsed.metrics) >= 2
+            or parsed.intent in ["compare_locations", "compare_years", "trend", "explain_why"]
+        ):
+            return "agentic"
+    except Exception:
+        pass
+
     q_lower = query.lower()
 
     # Check for complexity keywords

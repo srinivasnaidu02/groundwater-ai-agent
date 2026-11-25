@@ -84,31 +84,50 @@ class MockLLMClient(LLMClient):
                 ]
             )
 
-        # Check if query compares two states (e.g. Punjab and Haryana)
-        if tools and "compare" in user_msg.lower() and ("punjab" in user_msg.lower() and "haryana" in user_msg.lower()):
-            import re
-            year = "2025"
-            m_yr = re.search(r"\b(2020|2022|2023|2024|2025|2026)\b", user_msg)
-            if m_yr:
-                year = m_yr.group(1)
-            return LLMResponse(
-                content="Comparing groundwater extraction and recharge between Punjab and Haryana.",
-                tool_calls=[
-                    ToolCall(id="call_1", name="get_groundwater_extraction", arguments={"state": "Punjab", "assessment_year": year}),
-                    ToolCall(id="call_2", name="get_groundwater_recharge", arguments={"state": "Punjab", "assessment_year": year}),
-                    ToolCall(id="call_3", name="get_groundwater_extraction", arguments={"state": "Haryana", "assessment_year": year}),
-                    ToolCall(id="call_4", name="get_groundwater_recharge", arguments={"state": "Haryana", "assessment_year": year}),
-                ]
-            )
-
-        # Check if query compares multiple years for a single district (e.g. Pune for 2022 and 2024)
-        if tools and "compare" in user_msg.lower() and "pune" in user_msg.lower():
-            return LLMResponse(
-                content="Comparing groundwater extraction stage in Pune between 2022 and 2024.",
-                tool_calls=[
-                    ToolCall(id="call_1", name="compare_assessment_years", arguments={"state": "Maharashtra", "district": "Pune", "parameter": "stage", "year1": "2022", "year2": "2024"}),
-                ]
-            )
+        # Dynamic multi-location or multi-year comparison check
+        if tools and ("compare" in user_msg.lower() or "versus" in user_msg.lower() or "between" in user_msg.lower() or " vs " in user_msg.lower()):
+            try:
+                from backend.app.agentic.query_parser import parse_query
+                p = parse_query(user_msg)
+                if p.intent == "compare_years" and len(p.years) >= 2:
+                    loc = p.locations[0] if p.locations else None
+                    st = loc.state if loc else "Maharashtra"
+                    dist = loc.district if loc else None
+                    param = "stage" if "stage" in user_msg.lower() else ("recharge" if "recharge" in user_msg.lower() else "extraction")
+                    return LLMResponse(
+                        content=f"Comparing assessment years {p.years[0]} and {p.years[1]} for {st}.",
+                        tool_calls=[
+                            ToolCall(
+                                id="call_1",
+                                name="compare_assessment_years",
+                                arguments={"state": st, "district": dist, "parameter": param, "year1": p.years[0], "year2": p.years[1]},
+                            )
+                        ],
+                    )
+                if len(p.locations) >= 2:
+                    tool_calls = []
+                    idx = 1
+                    y = p.years[0] if p.years else "2025"
+                    for loc in p.locations:
+                        for m in p.metrics:
+                            t_name = "get_groundwater_extraction" if m == "extraction" else (
+                                "get_groundwater_recharge" if m == "recharge" else (
+                                    "get_stage_of_extraction" if m == "stage_of_extraction" else (
+                                        "get_extractable_groundwater" if m == "extractable_resource" else "get_stage_of_extraction"
+                                    )
+                                )
+                            )
+                            t_args = {"state": loc.state, "assessment_year": y}
+                            if loc.district:
+                                t_args["district"] = loc.district
+                            tool_calls.append(ToolCall(id=f"call_{idx}", name=t_name, arguments=t_args))
+                            idx += 1
+                    return LLMResponse(
+                        content=f"Comparing groundwater parameters across {', '.join(l.canonical_str() for l in p.locations)}.",
+                        tool_calls=tool_calls,
+                    )
+            except Exception:
+                pass
 
         # Synthesis JSON generation
         if "Evidence Ledger:" in user_msg or "evidence" in user_msg.lower():
