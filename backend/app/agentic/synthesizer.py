@@ -92,6 +92,31 @@ def build_template_answer(query: str, evidence_items: List[Dict[str, Any]]) -> D
                 loc = ""
 
         if isinstance(val_block, dict):
+            if "districts" in val_block and isinstance(val_block["districts"], list):
+                for d_item in val_block["districts"]:
+                    d_name = d_item.get("district") or d_item.get("name") or "District"
+                    d_loc = f"{d_name}, {loc}" if loc and d_name != loc else (loc or d_name)
+                    if "stage_of_extraction_pct" in d_item:
+                        breakdown.append({
+                            "parameter": "Groundwater Extraction Stage",
+                            "label": f"Stage ({d_name})",
+                            "value": d_item["stage_of_extraction_pct"],
+                            "unit": "%",
+                            "year": year,
+                            "location": d_loc,
+                        })
+                    elif "total_annual_extraction_ham" in d_item:
+                        breakdown.append({
+                            "parameter": "Total Annual Extraction",
+                            "label": f"Extraction ({d_name})",
+                            "value": d_item["total_annual_extraction_ham"],
+                            "unit": "Ham",
+                            "year": year,
+                            "location": d_loc,
+                        })
+                if loc:
+                    summary_parts.append(f"Groundwater assessment across {len(val_block['districts'])} districts in {loc} ({year}) retrieved.")
+
             if "stage_of_extraction_pct" in val_block:
                 pct = val_block["stage_of_extraction_pct"]
                 cat = val_block.get("assessment_category", "Over-Exploited")

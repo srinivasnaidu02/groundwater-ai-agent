@@ -258,3 +258,42 @@ def test_template_answer_includes_location_from_context():
     assert breakdown[0]["value"] == 362500.0
 
 
+def test_comparison_query_without_state_in_context():
+    """Verify that multi-state comparison queries succeed without selecting a single state."""
+    payload = {
+        "query": "Compare groundwater extraction and recharge between Punjab and Haryana in 2025",
+        "state": None,
+        "district": None,
+        "year": 2025,
+        "mode": "auto",
+    }
+    res = client.post("/api/agent/query", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    summary = data["answer"]["summary"]
+    breakdown = data["answer"]["numeric_breakdown"]
+
+    assert "Punjab" in summary
+    assert "Haryana" in summary
+    assert len(breakdown) >= 2
+    locations = {b.get("location") for b in breakdown}
+    assert "Punjab" in locations
+    assert "Haryana" in locations
+
+
+def test_location_in_query_allows_omitting_state_dropdown():
+    """Verify query mentioning a state works when state dropdown is omitted."""
+    payload = {
+        "query": "Show groundwater summary for Rajasthan in 2024",
+        "state": None,
+        "district": None,
+        "year": 2024,
+        "mode": "template",
+    }
+    res = client.post("/api/agent/query", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert any("Rajasthan" in b.get("location", "") for b in data["answer"]["numeric_breakdown"])
+
+
+

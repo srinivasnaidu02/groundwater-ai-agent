@@ -34,7 +34,7 @@ export const EXAMPLE_QUESTIONS = [
   },
   {
     text: "Compare groundwater extraction and recharge between Punjab and Haryana in 2025.",
-    state: "Punjab",
+    state: "",
     district: "",
     year: "2025",
   },

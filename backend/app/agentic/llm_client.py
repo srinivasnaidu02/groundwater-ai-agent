@@ -84,7 +84,44 @@ class MockLLMClient(LLMClient):
                 ]
             )
 
+        # Check if query compares two states (e.g. Punjab and Haryana)
+        if tools and "compare" in user_msg.lower() and ("punjab" in user_msg.lower() and "haryana" in user_msg.lower()):
+            import re
+            year = "2025"
+            m_yr = re.search(r"\b(2020|2022|2023|2024|2025|2026)\b", user_msg)
+            if m_yr:
+                year = m_yr.group(1)
+            return LLMResponse(
+                content="Comparing groundwater extraction and recharge between Punjab and Haryana.",
+                tool_calls=[
+                    ToolCall(id="call_1", name="get_groundwater_extraction", arguments={"state": "Punjab", "assessment_year": year}),
+                    ToolCall(id="call_2", name="get_groundwater_recharge", arguments={"state": "Punjab", "assessment_year": year}),
+                    ToolCall(id="call_3", name="get_groundwater_extraction", arguments={"state": "Haryana", "assessment_year": year}),
+                    ToolCall(id="call_4", name="get_groundwater_recharge", arguments={"state": "Haryana", "assessment_year": year}),
+                ]
+            )
+
+        # Check if query compares multiple years for a single district (e.g. Pune for 2022 and 2024)
+        if tools and "compare" in user_msg.lower() and "pune" in user_msg.lower():
+            return LLMResponse(
+                content="Comparing groundwater extraction stage in Pune between 2022 and 2024.",
+                tool_calls=[
+                    ToolCall(id="call_1", name="compare_assessment_years", arguments={"state": "Maharashtra", "district": "Pune", "parameter": "stage", "year1": "2022", "year2": "2024"}),
+                ]
+            )
+
         # Synthesis JSON generation
+        if "Evidence Ledger:" in user_msg or "evidence" in user_msg.lower():
+            import re
+            try:
+                ledger_match = re.search(r"Evidence Ledger:\s*(\[.*?\])", user_msg, re.DOTALL)
+                if ledger_match:
+                    evidence_items = json.loads(ledger_match.group(1))
+                    from backend.app.agentic.synthesizer import build_template_answer
+                    ans_dict = build_template_answer(user_msg[:100], evidence_items)
+                    return LLMResponse(content=json.dumps(ans_dict), tool_calls=None)
+            except Exception:
+                pass
         primary_val = 101.75
         secondary_val = 13.24
         # Parse from evidence if available in user message

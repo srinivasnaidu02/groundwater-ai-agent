@@ -228,16 +228,35 @@ export default function AIAnalystPage() {
     if (!selectedYear) {
       errors.year = 'Assessment year is required.';
     }
-    if (!selectedState) {
-      errors.state = 'State / Union Territory is required.';
+
+    // Check if query is a comparison or contains explicit location references
+    const qLower = trimmedQuery.toLowerCase();
+    const isComparison = [
+      'compare', 'comparison', 'between', ' vs ', ' vs. ', ' versus ',
+      'difference', 'all states', 'across india', 'national', 'country-wide',
+      'which states', 'highest', 'lowest', 'rank', 'top states', 'state-wise'
+    ].some((kw) => qLower.includes(kw));
+
+    const mentionsKnownState = states.some((s) => s && qLower.includes(s.toLowerCase()));
+
+    // State is only required if the query does NOT compare locations AND does NOT mention any state
+    if (!selectedState && !isComparison && !mentionsKnownState) {
+      errors.state = 'State is required unless comparing locations or specified in your question.';
     }
+
     if (!trimmedQuery) {
       errors.query = 'Please enter your natural-language question.';
     }
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setValidationError('Please complete all required fields (Year, State, Question) before submitting.');
+      setValidationError(
+        errors.query
+          ? 'Please enter your question before submitting.'
+          : errors.state
+          ? 'Please select a State / UT or mention a location in your question.'
+          : 'Please complete all required fields before submitting.'
+      );
       return;
     }
 
@@ -256,7 +275,7 @@ export default function AIAnalystPage() {
         query: trimmedQuery,
         mode,
         year: selectedYear ? parseInt(selectedYear, 10) : null,
-        state: selectedState,
+        state: selectedState || null,
         district: selectedDistrict || null,
       };
 

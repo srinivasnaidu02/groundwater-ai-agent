@@ -312,46 +312,86 @@ class AgenticOrchestrator:
         citations = set()
         steps = []
 
-        # Determine tool to call
-        tool_name = "get_stage_of_extraction"
-        tool_args: Dict[str, Any] = {"state": state or "Punjab", "assessment_year": year}
-        if district:
-            tool_args["district"] = district
+        # Check for multi-state comparison in template mode
+        found_states = [s for s in ALL_STATES if re.search(r"\b" + re.escape(s) + r"\b", query, re.I)]
+        if len(found_states) >= 2 and ("compare" in query.lower() or "between" in query.lower()):
+            s1, s2 = found_states[0], found_states[1]
+            tools_to_run = []
+            if "extraction" in query.lower():
+                tools_to_run.append("get_groundwater_extraction")
+            if "recharge" in query.lower():
+                tools_to_run.append("get_groundwater_recharge")
+            if not tools_to_run:
+                tools_to_run.append("get_stage_of_extraction")
 
-        if "recharge" in query.lower():
-            tool_name = "get_groundwater_recharge"
-        elif "extraction" in query.lower():
-            tool_name = "get_groundwater_extraction"
-        elif "overexploited" in query.lower() or "over-exploited" in query.lower():
-            tool_name = "get_overexploited_units"
-            tool_args = {"state": state or "Punjab", "assessment_year": year}
+            step_idx = 1
+            for st_target in [s1, s2]:
+                for t_name in tools_to_run:
+                    t_args = {"state": st_target, "assessment_year": year}
+                    t_res = self.tool_registry.run(t_name, **t_args)
+                    steps.append(
+                        AgentStep(
+                            step_number=step_idx,
+                            thought=f"Template execution: running {t_name} for {st_target}",
+                            tool_called=t_name,
+                            arguments=t_args,
+                            result_summary="Template tool execution completed",
+                            latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                        )
+                    )
+                    step_idx += 1
+                    evidence_items.append({
+                        "tool_name": t_name,
+                        "arguments": t_args,
+                        "result": t_res,
+                        "unit": t_res.get("unit", "Ham"),
+                        "year": t_res.get("year", year),
+                        "source": t_res.get("source", "CGWB National Compilation"),
+                        "verification": t_res.get("verification", "CGWB-verified"),
+                    })
+                    if t_res.get("source"):
+                        citations.add(t_res["source"])
+        else:
+            # Determine single tool to call
+            tool_name = "get_stage_of_extraction"
+            tool_args: Dict[str, Any] = {"state": state or "Punjab", "assessment_year": year}
+            if district:
+                tool_args["district"] = district
 
-        res = self.tool_registry.run(tool_name, **tool_args)
-        dur = round((time.perf_counter() - t0) * 1000.0, 2)
+            if "recharge" in query.lower():
+                tool_name = "get_groundwater_recharge"
+            elif "extraction" in query.lower():
+                tool_name = "get_groundwater_extraction"
+            elif "overexploited" in query.lower() or "over-exploited" in query.lower():
+                tool_name = "get_overexploited_units"
+                tool_args = {"state": state or "Punjab", "assessment_year": year}
 
-        steps.append(
-            AgentStep(
-                step_number=1,
-                thought="Template execution path: running tool",
-                tool_called=tool_name,
-                arguments=tool_args,
-                result_summary="Template tool execution completed",
-                latency_ms=dur,
+            res = self.tool_registry.run(tool_name, **tool_args)
+            dur = round((time.perf_counter() - t0) * 1000.0, 2)
+
+            steps.append(
+                AgentStep(
+                    step_number=1,
+                    thought="Template execution path: running tool",
+                    tool_called=tool_name,
+                    arguments=tool_args,
+                    result_summary="Template tool execution completed",
+                    latency_ms=dur,
+                )
             )
-        )
 
-        ev_entry = {
-            "tool_name": tool_name,
-            "arguments": tool_args,
-            "result": res,
-            "unit": res.get("unit", "Ham"),
-            "year": res.get("year", year),
-            "source": res.get("source", "CGWB National Compilation"),
-            "verification": res.get("verification", "CGWB-verified"),
-        }
-        evidence_items.append(ev_entry)
-        if res.get("source"):
-            citations.add(res["source"])
+            ev_entry = {
+                "tool_name": tool_name,
+                "arguments": tool_args,
+                "result": res,
+                "unit": res.get("unit", "Ham"),
+                "year": res.get("year", year),
+                "source": res.get("source", "CGWB National Compilation"),
+                "verification": res.get("verification", "CGWB-verified"),
+            }
+            evidence_items.append(ev_entry)
+            if res.get("source"):
+                citations.add(res["source"])
 
         answer = build_template_answer(query, evidence_items)
         ver_res = self.verifier.verify(answer, evidence_items)
