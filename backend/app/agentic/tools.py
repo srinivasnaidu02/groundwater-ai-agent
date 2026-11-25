@@ -193,9 +193,9 @@ class HistoricalTrendArgs(BaseModel):
 
 class CompareLocationsArgs(BaseModel):
     state1: str = Field(..., description="State of first location.")
-    district1: str = Field(..., description="District of first location.")
+    district1: Optional[str] = Field(None, description="Optional district of first location.")
     state2: str = Field(..., description="State of second location.")
-    district2: str = Field(..., description="District of second location.")
+    district2: Optional[str] = Field(None, description="Optional district of second location.")
     parameter: Optional[str] = Field("extraction", description="Parameter to compare.")
     assessment_year: Optional[str] = Field("2025", description="Assessment year.")
 

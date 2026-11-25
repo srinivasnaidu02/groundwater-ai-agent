@@ -44,6 +44,15 @@ class NumericVerification(BaseModel):
     fallback_used: bool = False
 
 
+class CompletenessReport(BaseModel):
+    """Report on whether all requested entities and metrics are present in evidence."""
+    complete: bool = True
+    missing_locations: List[str] = Field(default_factory=list)
+    missing_metrics: List[str] = Field(default_factory=list)
+    missing: List[str] = Field(default_factory=list)
+    notes: Optional[str] = None
+
+
 class AgentQueryResponse(BaseModel):
     """Unified response payload from the Agentic AI layer."""
     answer: Dict[str, Any] = Field(..., description="Structured answer dictionary")
@@ -52,6 +61,9 @@ class AgentQueryResponse(BaseModel):
     evidence: List[EvidenceItem] = Field(default_factory=list, description="Evidence items with provenance")
     citations: List[str] = Field(default_factory=list, description="List of source citations")
     verification: NumericVerification = Field(default_factory=NumericVerification)
+    completeness: Optional[CompletenessReport] = None
+    comparison_data: Optional[Dict[str, Any]] = None
+    override_note: Optional[str] = None
     latency_ms: float = 0.0
     model: str = "gemini-2.5-flash"
 
