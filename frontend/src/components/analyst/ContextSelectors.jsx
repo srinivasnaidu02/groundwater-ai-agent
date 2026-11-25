@@ -74,7 +74,7 @@ export default function ContextSelectors({
             <span>State / Union Territory</span>
             <span className="text-[11px] text-slate-400 font-normal">(or comparison in question)</span>
             <span
-              title="Select one of 36 Indian States or Union Territories, or leave as Multi-State for comparison questions"
+              title="Select one of 31 Indian States or Union Territories, or leave as Multi-State for comparison questions"
               className="cursor-help text-slate-500 hover:text-slate-300 transition-colors"
             >
               <HelpCircle className="w-3.5 h-3.5" />

@@ -168,11 +168,11 @@ def test_explicit_question_overrides_context():
 
 def test_meta_states_filtered_by_year():
     """Verify /api/meta/states filters available states according to the assessment year."""
-    # Year 2025 has benchmark subset of 13 states
+    # Year 2025 has benchmark subset of 11 states
     res_2025 = client.get("/api/meta/states?year=2025")
     assert res_2025.status_code == 200
     states_2025 = res_2025.json()["states"]
-    assert len(states_2025) == 13
+    assert len(states_2025) == 11
     assert "Bihar" in states_2025
     assert "Punjab" in states_2025
     assert "Rajasthan" in states_2025
