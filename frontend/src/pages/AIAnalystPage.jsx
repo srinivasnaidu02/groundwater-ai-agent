@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Cpu } from 'lucide-react';
 import {
   queryAgent,
   getAgentStatus,
@@ -298,58 +297,6 @@ export default function AIAnalystPage() {
       <div className="max-w-4xl mx-auto space-y-5">
         {/* a) Header Card with 4px Teal Left Border */}
         <InfoHeader />
-
-        {/* g) Mode Toggle & Active Provider Chip (Compact Row between Header and Form) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
-          <div className="inline-flex bg-[#0b1a2d] p-1 rounded-lg border border-slate-800 text-xs">
-            <button
-              type="button"
-              onClick={() => setMode('auto')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                mode === 'auto'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Auto (Intelligent)
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('agentic')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                mode === 'agentic'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Agentic (ReAct)
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('template')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                mode === 'template'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Template
-            </button>
-          </div>
-
-          {status && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0b1a2d] border border-slate-800 text-xs text-slate-300">
-              <Cpu className="w-3.5 h-3.5 text-teal-400" />
-              <span className="font-mono text-slate-200">{status.model || 'gemini-2.5-flash'}</span>
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  status.key_configured ? 'bg-emerald-400' : 'bg-amber-400'
-                }`}
-                title={status.key_configured ? 'Provider key active' : 'Running in offline/mock mode'}
-              />
-            </div>
-          )}
-        </div>
 
         {/* b & c) Guided Context Selectors */}
         <div className="bg-[#0f1f33] rounded-lg p-5 border border-slate-800/80 shadow-md">

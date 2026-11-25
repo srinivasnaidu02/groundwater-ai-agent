@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ShieldCheck,
   RefreshCw,
   AlertTriangle,
   BarChart2,
@@ -57,63 +56,11 @@ export default function ResultsView({ result, loading, error }) {
 
   const {
     answer = {},
-    mode_used = 'agentic',
-    verification = {},
-    steps = [],
     citations = [],
-    latency_ms = 0,
   } = result;
-
-  const isVerified = verification.passed && !verification.regenerated;
-  const isRegenerated = verification.regenerated;
-  const isFallback = mode_used === 'template_fallback' || verification.fallback_used;
 
   return (
     <div className="space-y-4">
-      {/* Badges / Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Mode Badge */}
-          <span
-            className={`px-2.5 py-1 rounded-full border font-medium ${
-              mode_used === 'agentic'
-                ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
-                : mode_used === 'template'
-                ? 'bg-teal-500/10 text-teal-300 border-teal-500/30'
-                : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-            }`}
-          >
-            {mode_used === 'agentic' && 'Autonomous ReAct Flow'}
-            {mode_used === 'template' && 'Template Mode'}
-            {mode_used === 'template_fallback' && 'Template Fallback'}
-          </span>
-
-          {/* Audit Badge */}
-          {isVerified && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              All figures verified against CGWB
-            </span>
-          )}
-          {isRegenerated && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-medium">
-              <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
-              Regenerated once
-            </span>
-          )}
-          {isFallback && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/30 font-medium">
-              <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-              Template fallback applied
-            </span>
-          )}
-        </div>
-
-        <span className="text-slate-400 text-xs">
-          Latency: <span className="text-slate-200 font-mono">{latency_ms} ms</span>
-        </span>
-      </div>
-
       {/* Verified CGWB Data Panel */}
       <div className="bg-[#0f1f33] rounded-lg p-5 sm:p-6 border border-slate-800/80 shadow-md space-y-4">
         <div>
