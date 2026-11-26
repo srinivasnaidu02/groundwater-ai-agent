@@ -19,7 +19,7 @@ from .database.models import (
     SourceDataset, QueryLog, EvaluationResult
 )
 from .database.functions import get_registry_metadata, execute_function
-from .schemas.schemas import HealthResponse, MetadataResponse, EvaluationSummary
+from .schemas import HealthResponse, MetadataResponse, EvaluationSummary
 
 from backend.app.agentic.config import get_agentic_settings
 from backend.app.agentic.schemas import (
