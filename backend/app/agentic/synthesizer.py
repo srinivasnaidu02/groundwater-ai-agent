@@ -5,7 +5,7 @@ import json
 import logging
 from typing import Any, Dict, List, Tuple
 
-from backend.app.agentic.llm_client import LLMClient
+from backend.app.llm import LLMClient
 
 logger = logging.getLogger(__name__)
 

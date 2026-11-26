@@ -8,7 +8,7 @@ import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from backend.app.agentic.config import AgenticSettings, get_agentic_settings
-from backend.app.agentic.llm_client import LLMClient, LLMResponse, ToolCall, get_llm_client
+from backend.app.llm import LLMClient, LLMResponse, ToolCall, get_llm_client
 from backend.app.agentic.schemas import (
     AgentQueryRequest,
     AgentQueryResponse,
